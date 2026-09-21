@@ -1,6 +1,7 @@
 package cn.super12138.todo.ui.activities
 
 import android.os.Bundle
+import android.content.Intent
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,24 +22,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import androidx.glance.appwidget.updateAll
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation3.runtime.NavKey
 import cn.super12138.todo.constants.Constants
+import cn.super12138.todo.logic.TaskRepository
 import cn.super12138.todo.ui.VerveDoDefaults
 import cn.super12138.todo.ui.components.Confetti
 import cn.super12138.todo.ui.navigation.TopLevelBackStack
 import cn.super12138.todo.ui.navigation.TopNavigation
 import cn.super12138.todo.ui.navigation.VerveDoDestinations
+import cn.super12138.todo.ui.navigation.VerveDoScreen
 import cn.super12138.todo.ui.theme.VerveDoTheme
-import cn.super12138.todo.ui.widget.all.AllIncompleteWidget
-import cn.super12138.todo.ui.widget.today.TodayTaskWidget
 import cn.super12138.todo.utils.VibrationUtils
 import cn.super12138.todo.utils.configureEdgeToEdge
 import cn.super12138.todo.utils.isDark
+import cn.super12138.todo.utils.updateTaskWidgets
 import com.kyant.m3color.dynamiccolor.ColorSpec
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 import org.koin.android.ext.android.get
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.activityRetainedScope
@@ -46,9 +48,6 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.scope.Scope
 
 class MainActivity : ComponentActivity(), AndroidScopeComponent {
-    val allIncompleteWidget = AllIncompleteWidget()
-    val todayTaskWidget = TodayTaskWidget()
-
     override val scope: Scope by activityRetainedScope()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +56,7 @@ class MainActivity : ComponentActivity(), AndroidScopeComponent {
         super.onCreate(savedInstanceState)
 
         val backStack: TopLevelBackStack<NavKey> = get()
+        if (savedInstanceState == null) openWidgetTask(intent)
 
         setContent {
             val mainViewModel: MainViewModel = koinViewModel()
@@ -172,12 +172,37 @@ class MainActivity : ComponentActivity(), AndroidScopeComponent {
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        openWidgetTask(intent)
+    }
+
+    private fun openWidgetTask(intent: Intent) {
+        val taskId = intent.getIntExtra(EXTRA_WIDGET_TASK_ID, -1)
+        if (taskId < 0) return
+        intent.removeExtra(EXTRA_WIDGET_TASK_ID)
+        lifecycleScope.launch {
+            val task = get<TaskRepository>().getAllTasks().first().find { it.id == taskId } ?: return@launch
+            val backStack: TopLevelBackStack<NavKey> = get()
+            val current = backStack.backStack.lastOrNull() as? VerveDoScreen.Editor.Edit
+            if (current?.task != task) {
+                if (current?.task?.id == taskId) backStack.removeLast()
+                backStack.addTopLevel(VerveDoScreen.Tasks)
+                backStack.add(VerveDoScreen.Editor.Edit(task))
+            }
+        }
+    }
+
+    companion object {
+        const val EXTRA_WIDGET_TASK_ID = "widget_task_id"
+    }
+
     override fun onStop() {
         super.onStop()
         lifecycleScope.launch {
             // TODO: 更新逻辑还需优化，最好是在update方法里执行
-            allIncompleteWidget.updateAll(applicationContext)
-            todayTaskWidget.updateAll(applicationContext)
+            updateTaskWidgets(applicationContext)
         }
     }
 }

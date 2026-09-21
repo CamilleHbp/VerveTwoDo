@@ -6,10 +6,20 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceTheme
+import androidx.glance.appwidget.updateAll
 import androidx.glance.text.FontWeight
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import cn.super12138.todo.logic.model.Priority
+import cn.super12138.todo.ui.widget.all.AllIncompleteWidget
+import cn.super12138.todo.ui.widget.today.TodayTaskWidget
+import cn.super12138.todo.ui.widget.upcoming.UpcomingTaskWidget
+
+suspend fun updateTaskWidgets(context: Context) {
+    AllIncompleteWidget().updateAll(context)
+    TodayTaskWidget().updateAll(context)
+    UpcomingTaskWidget().updateAll(context)
+}
 
 object GlanceTypography {
     val defaultColor: ColorProvider

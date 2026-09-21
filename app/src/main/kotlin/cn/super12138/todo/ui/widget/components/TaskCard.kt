@@ -10,6 +10,7 @@ import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
+import androidx.glance.action.Action
 import androidx.glance.action.action
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.cornerRadius
@@ -43,6 +44,8 @@ fun GlanceTaskCard(
     dueDateMillis: Long?,
     modifier: GlanceModifier = GlanceModifier,
     showDueDate: Boolean = true,
+    dueDateLabel: String? = null,
+    onCheckedAction: Action? = null,
     onChecked: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -90,6 +93,7 @@ fun GlanceTaskCard(
                     dueDateMillis?.let {
                         DueDatePresenter(
                             dueDateMillis = it,
+                            label = dueDateLabel,
                             modifier = GlanceModifier.fillMaxWidth()
                         )
                     }
@@ -98,7 +102,7 @@ fun GlanceTaskCard(
         }
 
         if (!isCompleted) {
-            CheckButton { onChecked() }
+            CheckButton(onCheckedAction = onCheckedAction, onChecked = onChecked)
         }
     }
 }
@@ -106,7 +110,8 @@ fun GlanceTaskCard(
 @Composable
 fun DueDatePresenter(
     dueDateMillis: Long?,
-    modifier: GlanceModifier = GlanceModifier
+    modifier: GlanceModifier = GlanceModifier,
+    label: String? = null
 ) {
     val context = LocalContext.current
 
@@ -117,7 +122,7 @@ fun DueDatePresenter(
     }
 
     Text(
-        text = combinedText,
+        text = label ?: combinedText,
         style = GlanceTypography.labelMedium.copy(
             color = GlanceTheme.colors.onSurfaceVariant
         ),
@@ -131,6 +136,7 @@ fun CheckButton(
     modifier: GlanceModifier = GlanceModifier,
     contentColor: ColorProvider = Color.White.toColorProvider(),
     backgroundColor: Color = VerveDoDefaults.Colors.Green,
+    onCheckedAction: Action? = null,
     onChecked: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -143,7 +149,7 @@ fun CheckButton(
             .size(40.dp)
             .cornerRadius(100.dp)
             .padding(VerveDoDefaults.contentPadding / 2)
-            .clickable(action(block = onChecked))
+            .clickable(onCheckedAction ?: action(block = onChecked))
     ) {
         Image(
             provider = ImageProvider(R.drawable.ic_check),

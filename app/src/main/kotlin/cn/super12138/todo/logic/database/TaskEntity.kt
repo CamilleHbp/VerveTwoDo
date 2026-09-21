@@ -15,4 +15,5 @@ data class TaskEntity(
     @ColumnInfo(name = "priority") val priority: Float,
     @ColumnInfo(name = "due_date") val dueDateMillis: Long? = null,
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val id: Int = 0,
+    @ColumnInfo(name = "created_at") val createdAtMillis: Long? = null,
 )

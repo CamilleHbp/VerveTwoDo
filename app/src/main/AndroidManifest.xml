@@ -43,6 +43,25 @@
             android:exported="false"
             android:launchMode="singleTask"
             android:theme="@style/Theme.VerveDo" />
+        <activity
+            android:name=".ui.widget.upcoming.WidgetTaskCreationActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:launchMode="singleTask"
+            android:label="@string/action_add_task"
+            android:theme="@style/Theme.VerveDo" />
+        <activity
+            android:name=".ui.widget.upcoming.UpcomingWidgetConfigurationActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:label="@string/widget_settings"
+            android:theme="@style/Theme.VerveDo">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
 
         <receiver
             android:name=".ui.widget.all.AllIncompleteWidgetReceiver"
@@ -65,6 +84,17 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/today_task_widget_info" />
+        </receiver>
+        <receiver
+            android:name=".ui.widget.upcoming.UpcomingTaskWidgetReceiver"
+            android:exported="true"
+            android:label="@string/label_widget_upcoming">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/upcoming_task_widget_info" />
         </receiver>
     </application>
 </manifest>

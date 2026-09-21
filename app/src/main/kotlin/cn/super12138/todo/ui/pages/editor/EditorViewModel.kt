@@ -43,6 +43,16 @@ class EditorViewModel(
     )
 
     private var initialCategory = ""
+    private var initialDueDate = initialTask?.dueDateMillis
+    private var creationDefaultsApplied = false
+
+    fun setCreationDefaults(category: String, dueDateMillis: Long?) {
+        if (initialTask != null || creationDefaultsApplied) return
+        creationDefaultsApplied = true
+        initialCategory = category
+        initialDueDate = dueDateMillis
+        localUiState.update { it.copy(category = category, dueDateMillis = dueDateMillis) }
+    }
 
     init {
         if (initialTask != null) {
@@ -73,7 +83,7 @@ class EditorViewModel(
             if ((initialTask?.category ?: initialCategory) != category.trim()) isModified = true
             if ((initialTask?.priority ?: 0f) != priority.value) isModified = true
             if ((initialTask?.isCompleted == true) != isCompleted) isModified = true
-            if (initialTask?.dueDateMillis != dueDateMillis) isModified = true
+            if (initialDueDate != dueDateMillis) isModified = true
         }
 
         return isModified
@@ -97,7 +107,8 @@ class EditorViewModel(
                 isCompleted = isCompleted,
                 priority = priority.value,
                 dueDateMillis = dueDateMillis,
-                id = initialTask?.id ?: 0
+                id = initialTask?.id ?: 0,
+                createdAtMillis = initialTask?.createdAtMillis
             )
         }
         localUiState.update { it.copy(isSaving = true, saveFailed = false) }

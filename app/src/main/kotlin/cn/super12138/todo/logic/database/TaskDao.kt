@@ -23,6 +23,12 @@ interface TaskDao {
     @Update
     suspend fun update(task: TaskEntity)
 
+    @Query("UPDATE ${Constants.DB_TABLE_NAME} SET completed = 1 WHERE id = :taskId")
+    suspend fun completeTask(taskId: Int)
+
+    @Query("UPDATE ${Constants.DB_TABLE_NAME} SET completed = 0 WHERE id = :taskId")
+    suspend fun restoreTask(taskId: Int)
+
     @Delete
     suspend fun delete(task: TaskEntity)
 

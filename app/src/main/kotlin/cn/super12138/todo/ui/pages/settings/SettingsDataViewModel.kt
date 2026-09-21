@@ -119,7 +119,7 @@ class SettingsDataViewModel(
             val tasks = taskRepository.getAllTasks().first()
 
             val header =
-                listOf("content", "category", "isCompleted", "priority", "dueDateMillis", "id")
+                listOf("content", "category", "isCompleted", "priority", "dueDateMillis", "id", "createdAtMillis")
 
             val rows = tasks.map { task ->
                 with(task) {
@@ -129,7 +129,8 @@ class SettingsDataViewModel(
                         isCompleted.toString(),
                         priority.toString(),
                         dueDateMillis?.toString() ?: "",
-                        id.toString()
+                        id.toString(),
+                        createdAtMillis?.toString() ?: ""
                     )
                 }
             }

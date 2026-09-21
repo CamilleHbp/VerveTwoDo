@@ -110,6 +110,10 @@ fun TaskEditorPage(
     modifier: Modifier = Modifier,
     task: TaskEntity? = null,
     onNavigateUp: () -> Unit = {},
+    onSaved: () -> Unit = onNavigateUp,
+    quickAdd: Boolean = false,
+    initialCategory: String = "",
+    initialDueDateMillis: Long? = null,
     viewModel: EditorViewModel = koinViewModel { parametersOf(task) }
 ) {
     val view = LocalView.current
@@ -133,8 +137,12 @@ fun TaskEditorPage(
         }
     }
 
-    LaunchedEffect(uiState.shouldAutoFocusContent) {
-        if (uiState.shouldAutoFocusContent) {
+    LaunchedEffect(quickAdd) {
+        if (quickAdd) viewModel.setCreationDefaults(initialCategory, initialDueDateMillis)
+    }
+
+    LaunchedEffect(quickAdd || uiState.shouldAutoFocusContent) {
+        if (quickAdd || uiState.shouldAutoFocusContent) {
             focusRequester.requestFocus()
         }
     }
@@ -142,7 +150,7 @@ fun TaskEditorPage(
     LaunchedEffect(uiState.isSaved) {
         if (uiState.isSaved) {
             if (task != null && !task.isCompleted && uiState.isCompleted) viewModel.setConfettiVisibility(true)
-            onNavigateUp()
+            onSaved()
         }
     }
     LaunchedEffect(uiState.saveFailed) {

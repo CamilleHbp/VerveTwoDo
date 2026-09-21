@@ -28,7 +28,10 @@ From `Android 8.0 (Oreo)` to `Android 17.0 (Cinnamon Bun)`
 - [x] Task Priority
 - [x] Data Backup
 - [x] Time Segmentation
+- [x] Upcoming Tasks Widget with Tag Sorting and Filtering
 - ...
+
+Add **Upcoming tasks** from the VerveTwoDo section of your home-screen widget picker. It shows tasks due today or later, with unfinished tasks from earlier days at the top in **À reprogrammer**. Missed due dates remain visible; completing or rescheduling a task removes it from that section. The selected tag filters and sort order also apply within this section. Use the separate Tags and Sort controls to select one or more categories and order by due date, creation date, priority, or title. The header chevron hides or shows the controls without clearing your selections. Tags correspond to task categories, and each widget saves its own settings. Tap **+** to create a task, with today and a single selected tag prefilled. Saving returns to the widget; a category is optional for quick creation. Tap a task's circle to complete it. Completed tasks due today or later stay in their group, shown in grey with a strikethrough below unfinished tasks and following the same sort order. Tap the checked circle to mark a task unfinished again.
 
 # ⬇️ Download
 

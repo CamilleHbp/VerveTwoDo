@@ -35,6 +35,7 @@ import cn.super12138.todo.ui.widget.components.GlanceTitleBar
 import cn.super12138.todo.utils.GlanceTypography
 import cn.super12138.todo.utils.SystemUtils
 import cn.super12138.todo.utils.sort
+import cn.super12138.todo.utils.updateTaskWidgets
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -55,7 +56,12 @@ class TodayTaskWidget : GlanceAppWidget(), KoinComponent {
             GlanceTheme {
                 TodayTaskApp(
                     taskList = todayTask,
-                    onChecked = { scope.launch { taskRepository.updateTask(it) } }
+                    onChecked = { task ->
+                        scope.launch {
+                            taskRepository.completeTask(task.id)
+                            updateTaskWidgets(context)
+                        }
+                    }
                 )
             }
         }
