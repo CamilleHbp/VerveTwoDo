@@ -218,4 +218,9 @@
     <string name="widget_category_optional">카테고리 (선택 사항)</string>
     <string name="tag_input_hint">기존 태그를 선택하거나 새 태그를 입력하세요</string>
     <string name="tag_optional">태그 (선택 사항)</string>
+    <string name="widget_this_week">이번 주</string>
+    <string name="widget_next_week">다음 주</string>
+    <string name="widget_later">나중에</string>
+    <string name="widget_expand_section">%1$s 펼치기, %2$s</string>
+    <string name="widget_collapse_section">%1$s 접기, %2$s</string>
 </resources>

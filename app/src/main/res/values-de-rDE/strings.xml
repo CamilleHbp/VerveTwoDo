@@ -220,4 +220,9 @@
     <string name="widget_category_optional">Kategorie (optional)</string>
     <string name="tag_input_hint">Vorhandenes Tag auswählen oder ein neues eingeben</string>
     <string name="tag_optional">Tag (optional)</string>
+    <string name="widget_this_week">Diese Woche</string>
+    <string name="widget_next_week">Nächste Woche</string>
+    <string name="widget_later">Später</string>
+    <string name="widget_expand_section">%1$s ausklappen, %2$s</string>
+    <string name="widget_collapse_section">%1$s einklappen, %2$s</string>
 </resources>

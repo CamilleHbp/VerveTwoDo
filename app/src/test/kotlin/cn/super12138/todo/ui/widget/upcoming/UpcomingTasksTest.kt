@@ -29,7 +29,7 @@ class UpcomingTasksTest {
         assertEquals(listOf(1), result.first().tasks.map { it.id })
         assertTrue(result.first().isOverdue)
         assertEquals(listOf(2), result.last().tasks.map { it.id })
-        assertEquals(today, result.last().date)
+        assertEquals(UpcomingTaskSection.Today, result.last().section)
         assertFalse(result.last().isOverdue)
     }
 
@@ -91,10 +91,10 @@ class UpcomingTasksTest {
         }
     }
 
-    @Test fun dateSortGroupsByDayInEitherDirection() {
+    @Test fun dateSortGroupsBySectionInEitherDirection() {
         val tasks = listOf(task(1), task(2, day = today.plusDays(1)))
-        assertEquals(listOf(today, today.plusDays(1)), groups(tasks).map { it.date })
-        assertEquals(listOf(today.plusDays(1), today), groups(tasks, UpcomingTaskSort.DueDateLatest).map { it.date })
+        assertEquals(listOf(UpcomingTaskSection.Today, UpcomingTaskSection.Tomorrow), groups(tasks).map { it.section })
+        assertEquals(listOf(UpcomingTaskSection.Tomorrow, UpcomingTaskSection.Today), groups(tasks, UpcomingTaskSort.DueDateLatest).map { it.section })
     }
 
     @Test fun dateTiesUsePriorityThenStableId() {
@@ -109,8 +109,8 @@ class UpcomingTasksTest {
         assertEquals(listOf(4, 2, 1, 3, 5, 6), ids(tasks))
         assertEquals(listOf(5, 6, 4, 2, 1, 3), ids(tasks, UpcomingTaskSort.DueDateLatest))
         val completedToday = tasks.map { if (it.id <= 4) it.copy(isCompleted = true) else it }
-        assertEquals(listOf(today, today.plusDays(1)), groups(completedToday).map { it.date })
-        assertEquals(listOf(today.plusDays(1), today), groups(completedToday, UpcomingTaskSort.DueDateLatest).map { it.date })
+        assertEquals(listOf(UpcomingTaskSection.Today, UpcomingTaskSection.Tomorrow), groups(completedToday).map { it.section })
+        assertEquals(listOf(UpcomingTaskSection.Tomorrow, UpcomingTaskSection.Today), groups(completedToday, UpcomingTaskSort.DueDateLatest).map { it.section })
     }
 
     @Test fun selectedSortOrdersPendingAndCompletedTasksIndependently() {
@@ -171,7 +171,7 @@ class UpcomingTasksTest {
         assertEquals(listOf(3, 2, 1), ids(tasks, UpcomingTaskSort.CreatedOldest))
         assertEquals(listOf(1, 2, 3), ids(tasks, UpcomingTaskSort.CreatedNewest))
         assertEquals(1, groups(tasks, UpcomingTaskSort.CreatedNewest).size)
-        assertEquals(null, groups(tasks, UpcomingTaskSort.CreatedNewest).single().date)
+        assertEquals(UpcomingTaskSection.Upcoming, groups(tasks, UpcomingTaskSort.CreatedNewest).single().section)
     }
 
     @Test fun legacyCreationOrderIsPreservedWithNewTasks() {
@@ -194,13 +194,13 @@ class UpcomingTasksTest {
         val day = LocalDate.of(2026, 3, 29)
         val tasks = listOf(task(1, day = day), task(2).copy(
             dueDateMillis = day.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()))
-        assertEquals(listOf(day, day.plusDays(1)),
-            upcomingTaskGroups(tasks, UpcomingTaskSort.DueDate, today = day, zone = zone).map { it.date })
+        assertEquals(listOf(UpcomingTaskSection.Today, UpcomingTaskSection.Tomorrow),
+            upcomingTaskGroups(tasks, UpcomingTaskSort.DueDate, today = day, zone = zone).map { it.section })
         val nextDay = upcomingTaskGroups(tasks, UpcomingTaskSort.DueDate,
             today = day.plusDays(1), zone = zone)
         assertTrue(nextDay.first().isOverdue)
         assertEquals(listOf(1), nextDay.first().tasks.map { it.id })
-        assertEquals(day.plusDays(1), nextDay.last().date)
+        assertEquals(UpcomingTaskSection.Today, nextDay.last().section)
         assertEquals(listOf(2), nextDay.last().tasks.map { it.id })
     }
 
@@ -227,6 +227,38 @@ class UpcomingTasksTest {
 
     @Test fun emptyInputHasNoGroups() {
         UpcomingTaskSort.entries.forEach { assertTrue(groups(emptyList(), it).isEmpty()) }
+    }
+
+    @Test fun calendarSectionsCoverEveryBoundaryAndReverseWithDateOrder() {
+        val tasks = listOf(-1L, 0L, 1L, 2L, 6L, 7L, 13L, 14L, 40L)
+            .mapIndexed { index, offset -> task(index + 1, day = today.plusDays(offset)) }
+        val result = groups(tasks)
+        assertEquals(listOf(UpcomingTaskSection.Overdue, UpcomingTaskSection.Today, UpcomingTaskSection.Tomorrow,
+            UpcomingTaskSection.ThisWeek, UpcomingTaskSection.NextWeek, UpcomingTaskSection.Later), result.map { it.section })
+        assertEquals(listOf(listOf(1), listOf(2), listOf(3), listOf(4, 5), listOf(6, 7), listOf(8, 9)),
+            result.map { group -> group.tasks.map { it.id } })
+        assertEquals(listOf(1, 9, 8, 7, 6, 5, 4, 3, 2), ids(tasks, UpcomingTaskSort.DueDateLatest))
+    }
+
+    @Test fun tomorrowWinsOverTheCalendarWeekBoundary() {
+        val sunday = LocalDate.of(2026, 9, 27)
+        val tasks = listOf(1L, 2L, 7L, 8L).mapIndexed { index, offset -> task(index + 1, day = sunday.plusDays(offset)) }
+        val result = upcomingTaskGroups(tasks, UpcomingTaskSort.DueDate, today = sunday, zone = zone)
+        assertEquals(listOf(UpcomingTaskSection.Tomorrow, UpcomingTaskSection.NextWeek, UpcomingTaskSection.Later),
+            result.map { it.section })
+        assertEquals(listOf(2, 3), result[1].tasks.map { it.id })
+    }
+
+    @Test fun collapsedSectionsAreIndependentPerWidgetAndSurviveFiltering() {
+        val first = mutablePreferencesOf()
+        val second = mutablePreferencesOf()
+        UpcomingWidgetPreferences.toggleSection(first, UpcomingTaskSection.NextWeek)
+        UpcomingWidgetPreferences.toggleSection(first, UpcomingTaskSection.Today)
+        UpcomingWidgetPreferences.setCategories(first, setOf("Work"))
+        assertEquals(setOf("NextWeek", "Today"), UpcomingWidgetPreferences.collapsedSections(first))
+        assertTrue(UpcomingWidgetPreferences.collapsedSections(second).isEmpty())
+        UpcomingWidgetPreferences.toggleSection(first, UpcomingTaskSection.Today)
+        assertEquals(setOf("NextWeek"), UpcomingWidgetPreferences.collapsedSections(first))
     }
 
     @Test fun choosingSameSortFieldPreservesDateDirection() {

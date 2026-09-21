@@ -14,6 +14,7 @@ object UpcomingWidgetPreferences {
     val categoryKey = stringPreferencesKey("upcoming_category") // Legacy single-tag filter.
     val categoriesKey = stringSetPreferencesKey("upcoming_categories")
     val controlsKey = booleanPreferencesKey("upcoming_controls_visible")
+    val collapsedSectionsKey = stringSetPreferencesKey("upcoming_collapsed_sections")
     val panelKey = stringPreferencesKey("upcoming_panel")
     val undoIdKey = intPreferencesKey("upcoming_undo_id")
     val undoUntilKey = longPreferencesKey("upcoming_undo_until")
@@ -30,6 +31,14 @@ object UpcomingWidgetPreferences {
 
     fun sort(preferences: Preferences): UpcomingTaskSort =
         UpcomingTaskSort.entries.find { it.name == preferences[sortKey] } ?: UpcomingTaskSort.DueDate
+
+    fun collapsedSections(preferences: Preferences): Set<String> = preferences[collapsedSectionsKey].orEmpty()
+
+    fun toggleSection(preferences: MutablePreferences, section: UpcomingTaskSection) {
+        val collapsed = collapsedSections(preferences)
+        preferences[collapsedSectionsKey] = if (section.name in collapsed) collapsed - section.name
+            else collapsed + section.name
+    }
 
     fun categories(preferences: Preferences): Set<String> = preferences[categoriesKey]
         ?: preferences[categoryKey]?.let { setOf(it.ifBlank { "" }) } ?: emptySet()

@@ -28,6 +28,9 @@ class UpcomingControlsAction : ActionCallback {
                         preferences.remove(panelKey)
                     }
                     "panel" -> preferences[panelKey] = parameters[valueKey].orEmpty()
+                    "section" -> UpcomingTaskSection.entries.find { it.name == parameters[valueKey] }?.let {
+                        toggleSection(preferences, it)
+                    }
                     "sort" -> {
                         val sort = UpcomingTaskSort.entries.find { it.name == parameters[valueKey] }
                         if (sort != null) preferences[sortKey] = sort.name

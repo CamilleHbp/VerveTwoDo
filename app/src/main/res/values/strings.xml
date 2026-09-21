@@ -212,6 +212,11 @@
     <string name="widget_completed_task">Completed: %s</string>
     <string name="widget_undo">Undo</string>
     <string name="widget_reschedule" translatable="false">À reprogrammer</string>
+    <string name="widget_this_week">This Week</string>
+    <string name="widget_next_week">Next Week</string>
+    <string name="widget_later">Later</string>
+    <string name="widget_expand_section">Expand %1$s, %2$s</string>
+    <string name="widget_collapse_section">Collapse %1$s, %2$s</string>
     <string name="widget_empty_filtered">No upcoming or overdue tasks for these tags</string>
     <string name="widget_empty_unfiltered">No upcoming or overdue tasks</string>
     <string name="widget_clear_tags">Show all tags</string>

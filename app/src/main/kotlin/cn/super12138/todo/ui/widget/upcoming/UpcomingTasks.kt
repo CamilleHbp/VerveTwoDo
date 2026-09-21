@@ -1,9 +1,11 @@
 package cn.super12138.todo.ui.widget.upcoming
 
 import cn.super12138.todo.logic.database.TaskEntity
+import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.temporal.TemporalAdjusters
 
 enum class UpcomingTaskSort {
     DueDate, DueDateLatest, CreatedNewest, CreatedOldest, Priority, Alphabetical
@@ -34,11 +36,27 @@ fun UpcomingTaskSort.reverseDateOrder(): UpcomingTaskSort = when (this) {
     else -> this
 }
 
+enum class UpcomingTaskSection {
+    Overdue, Today, Tomorrow, ThisWeek, NextWeek, Later, Upcoming
+}
+
 data class UpcomingTaskGroup(
-    val date: LocalDate? = null,
-    val tasks: List<TaskEntity>,
-    val isOverdue: Boolean = false
-)
+    val section: UpcomingTaskSection,
+    val tasks: List<TaskEntity>
+) {
+    val isOverdue: Boolean get() = section == UpcomingTaskSection.Overdue
+}
+
+private fun dateSection(date: LocalDate, today: LocalDate): UpcomingTaskSection {
+    val nextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY))
+    return when {
+        date == today -> UpcomingTaskSection.Today
+        date == today.plusDays(1) -> UpcomingTaskSection.Tomorrow
+        date < nextMonday -> UpcomingTaskSection.ThisWeek
+        date < nextMonday.plusWeeks(1) -> UpcomingTaskSection.NextWeek
+        else -> UpcomingTaskSection.Later
+    }
+}
 
 /** An empty set includes all tags; an empty string selects untagged tasks. */
 fun upcomingTaskGroups(
@@ -73,13 +91,14 @@ fun upcomingTaskGroups(
     }
     val groups = if (upcoming.isEmpty()) emptyList()
     else if (sort == UpcomingTaskSort.DueDate || sort == UpcomingTaskSort.DueDateLatest) {
-        upcoming.groupBy { Instant.ofEpochMilli(requireNotNull(it.dueDateMillis)).atZone(zone).toLocalDate() }
-            .map { (date, group) -> UpcomingTaskGroup(date, group) }
-    } else listOf(UpcomingTaskGroup(tasks = upcoming))
+        upcoming.groupBy {
+            dateSection(Instant.ofEpochMilli(requireNotNull(it.dueDateMillis)).atZone(zone).toLocalDate(), today)
+        }.map { (section, group) -> UpcomingTaskGroup(section, group) }
+    } else listOf(UpcomingTaskGroup(UpcomingTaskSection.Upcoming, upcoming))
     // Keep the date groups in place, then apply the chosen order within each completion state.
     val pendingFirst = compareBy<TaskEntity> { it.isCompleted }.then(comparator)
     return buildList {
-        if (overdue.isNotEmpty()) add(UpcomingTaskGroup(tasks = overdue, isOverdue = true))
+        if (overdue.isNotEmpty()) add(UpcomingTaskGroup(UpcomingTaskSection.Overdue, overdue))
         addAll(groups.map { it.copy(tasks = it.tasks.sortedWith(pendingFirst)) })
     }
 }

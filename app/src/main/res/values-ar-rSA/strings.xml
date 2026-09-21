@@ -228,4 +228,9 @@
     <string name="widget_category_optional">الفئة (اختياري)</string>
     <string name="tag_input_hint">اختر وسمًا موجودًا أو اكتب وسمًا جديدًا</string>
     <string name="tag_optional">وسم (اختياري)</string>
+    <string name="widget_this_week">هذا الأسبوع</string>
+    <string name="widget_next_week">الأسبوع القادم</string>
+    <string name="widget_later">لاحقًا</string>
+    <string name="widget_expand_section">توسيع %1$s، %2$s</string>
+    <string name="widget_collapse_section">طي %1$s، %2$s</string>
 </resources>

@@ -218,4 +218,9 @@
     <string name="widget_category_optional">カテゴリ（任意）</string>
     <string name="tag_input_hint">既存のタグを選択するか、新しいタグを入力してください</string>
     <string name="tag_optional">タグ（任意）</string>
+    <string name="widget_this_week">今週</string>
+    <string name="widget_next_week">来週</string>
+    <string name="widget_later">後で</string>
+    <string name="widget_expand_section">%1$sを展開、%2$s</string>
+    <string name="widget_collapse_section">%1$sを折りたたむ、%2$s</string>
 </resources>

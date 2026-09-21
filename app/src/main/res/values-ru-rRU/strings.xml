@@ -224,4 +224,9 @@
     <string name="widget_category_optional">Категория (необязательно)</string>
     <string name="tag_input_hint">Выберите существующую метку или введите новую</string>
     <string name="tag_optional">Метка (необязательно)</string>
+    <string name="widget_this_week">На этой неделе</string>
+    <string name="widget_next_week">На следующей неделе</string>
+    <string name="widget_later">Позже</string>
+    <string name="widget_expand_section">Развернуть %1$s, %2$s</string>
+    <string name="widget_collapse_section">Свернуть %1$s, %2$s</string>
 </resources>

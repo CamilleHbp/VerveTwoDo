@@ -45,9 +45,12 @@ import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.layout.width
 import androidx.glance.state.PreferencesGlanceStateDefinition
+import androidx.glance.semantics.contentDescription
+import androidx.glance.semantics.semantics
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextDecoration
+import androidx.glance.unit.ColorProvider
 import cn.super12138.todo.R
 import cn.super12138.todo.logic.SettingsRepository
 import cn.super12138.todo.logic.TaskRepository
@@ -100,7 +103,8 @@ class UpcomingTaskWidget : GlanceAppWidget(), KoinComponent {
             GlanceTheme {
                 UpcomingWidgetContent(upcomingTaskGroups(allTasks, sort, selected, today), sort, selected,
                     tags, today, preferences[UpcomingWidgetPreferences.controlsKey] ?: true,
-                    preferences[UpcomingWidgetPreferences.panelKey].orEmpty(), undoTitle)
+                    preferences[UpcomingWidgetPreferences.panelKey].orEmpty(), undoTitle,
+                    UpcomingWidgetPreferences.collapsedSections(preferences))
             }
         }
     }
@@ -113,7 +117,8 @@ private fun controlAction(command: String, value: String = ""): Action =
 @Composable
 private fun UpcomingWidgetContent(
     groups: List<UpcomingTaskGroup>, sort: UpcomingTaskSort, selected: Set<String>,
-    tags: List<String>, today: LocalDate, controlsVisible: Boolean, panel: String, undoTitle: String?
+    tags: List<String>, today: LocalDate, controlsVisible: Boolean, panel: String, undoTitle: String?,
+    collapsedSections: Set<String>
 ) {
     val context = LocalContext.current
     val size = LocalSize.current
@@ -189,22 +194,20 @@ private fun UpcomingWidgetContent(
                     }
                 } else {
                     LazyColumn(modifier = GlanceModifier.fillMaxWidth().defaultWeight()) {
-                        groups.forEachIndexed { index, group ->
-                            if (group.isOverdue) {
-                                item(itemId = -index.toLong() - 1) {
-                                    RescheduleHeader(group.tasks.size, narrow)
-                                }
-                            } else if (group.date != null || groups.first().isOverdue) {
-                                item(itemId = -index.toLong() - 1) {
-                                    Text(group.date?.let { dateLabel(context, it, today) }
-                                        ?: context.getString(R.string.title_upcoming_task),
-                                        style = GlanceTypography.labelMedium.copy(color = GlanceTheme.colors.primary),
-                                        maxLines = 1, modifier = GlanceModifier.padding(start = 52.dp, top = 8.dp, bottom = 2.dp))
-                                }
+                        groups.forEach { group ->
+                            val collapsed = group.section.name in collapsedSections
+                            val showDate = group.section !in setOf(UpcomingTaskSection.Today, UpcomingTaskSection.Tomorrow)
+                            item(itemId = -100L - group.section.ordinal) { Spacer(GlanceModifier.height(8.dp)) }
+                            item(itemId = -1L - group.section.ordinal) {
+                                SectionHeader(group, collapsed)
                             }
-                            items(group.tasks, itemId = { it.id.toLong() }) { task ->
-                                UpcomingTaskRow(task, today, group.date == null,
-                                    if (size.height >= 300.dp && !narrow) 2 else 1, group.isOverdue)
+                            if (!collapsed) {
+                                items(group.tasks, itemId = { it.id.toLong() }) { task ->
+                                    UpcomingTaskRow(task, today, showDate,
+                                        if (size.height >= 300.dp && !narrow) 2 else 1, group.isOverdue,
+                                        GlanceModifier.fillMaxWidth().sectionTint(group.section.color(), alpha = 0.04f,
+                                            roundBottom = task.id == group.tasks.last().id))
+                                }
                             }
                         }
                         // Let the final task scroll completely above the floating add button.
@@ -238,23 +241,60 @@ private fun UpcomingWidgetContent(
 }
 
 @Composable
-private fun RescheduleHeader(count: Int, narrow: Boolean) {
+private fun SectionHeader(group: UpcomingTaskGroup, collapsed: Boolean) {
     val context = LocalContext.current
-    Box(modifier = GlanceModifier.fillMaxWidth().padding(top = 4.dp, bottom = 4.dp)) {
+    val title = context.getString(group.section.labelRes())
+    val color = group.section.color()
+    val count = context.resources.getQuantityString(R.plurals.widget_task_count, group.tasks.size, group.tasks.size)
+    val description = context.getString(
+        if (collapsed) R.string.widget_expand_section else R.string.widget_collapse_section, title, count)
+    Box(contentAlignment = Alignment.CenterStart, modifier = GlanceModifier.fillMaxWidth()
+        .sectionTint(color, roundTop = true, roundBottom = collapsed)
+        .clickable(controlAction("section", group.section.name))
+        .semantics { contentDescription = description }) {
+        Spacer(GlanceModifier.height(48.dp))
         Row(verticalAlignment = Alignment.CenterVertically,
-            modifier = GlanceModifier.fillMaxWidth().background(GlanceTheme.colors.errorContainer)
-                .cornerRadius(12.dp).padding(horizontal = 12.dp, vertical = 8.dp)) {
-            Text(context.getString(R.string.widget_reschedule),
-                style = GlanceTypography.labelLarge.copy(color = GlanceTheme.colors.onErrorContainer,
-                    fontWeight = FontWeight.Bold),
+            modifier = GlanceModifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 12.dp)) {
+            Text(title, style = GlanceTypography.labelLarge.copy(color = color, fontWeight = FontWeight.Bold),
                 maxLines = 2, modifier = GlanceModifier.defaultWeight())
-            if (!narrow) {
-                Spacer(GlanceModifier.width(8.dp))
-                Text(context.resources.getQuantityString(R.plurals.widget_task_count, count, count),
-                    style = GlanceTypography.labelMedium.copy(color = GlanceTheme.colors.onErrorContainer), maxLines = 1)
-            }
+            Spacer(GlanceModifier.width(8.dp))
+            Text(group.tasks.size.toString(), style = GlanceTypography.labelMedium.copy(color = color), maxLines = 1)
+            Spacer(GlanceModifier.width(12.dp))
+            Image(ImageProvider(if (collapsed) R.drawable.ic_widget_expand else R.drawable.ic_widget_collapse),
+                null, colorFilter = ColorFilter.tint(color), modifier = GlanceModifier.size(16.dp))
         }
     }
+}
+
+private fun GlanceModifier.sectionTint(
+    color: ColorProvider, alpha: Float = 0.08f, roundTop: Boolean = false, roundBottom: Boolean = false
+): GlanceModifier {
+    val shape = when {
+        roundTop && !roundBottom -> R.drawable.widget_section_top_background
+        roundBottom && !roundTop -> R.drawable.widget_section_bottom_background
+        else -> R.drawable.widget_section_background
+    }
+    val tinted = background(ImageProvider(shape), colorFilter = ColorFilter.tint(color), alpha = alpha)
+    return if (roundTop && roundBottom) tinted.cornerRadius(12.dp) else tinted
+}
+
+@Composable
+private fun UpcomingTaskSection.color(): ColorProvider = when (this) {
+    UpcomingTaskSection.Overdue -> GlanceTheme.colors.error
+    UpcomingTaskSection.Today, UpcomingTaskSection.Upcoming -> GlanceTheme.colors.primary
+    UpcomingTaskSection.Tomorrow, UpcomingTaskSection.ThisWeek -> GlanceTheme.colors.secondary
+    UpcomingTaskSection.NextWeek -> GlanceTheme.colors.tertiary
+    UpcomingTaskSection.Later -> GlanceTheme.colors.onSurfaceVariant
+}
+
+private fun UpcomingTaskSection.labelRes(): Int = when (this) {
+    UpcomingTaskSection.Overdue -> R.string.widget_reschedule
+    UpcomingTaskSection.Today -> R.string.time_today
+    UpcomingTaskSection.Tomorrow -> R.string.time_tomorrow
+    UpcomingTaskSection.ThisWeek -> R.string.widget_this_week
+    UpcomingTaskSection.NextWeek -> R.string.widget_next_week
+    UpcomingTaskSection.Later -> R.string.widget_later
+    UpcomingTaskSection.Upcoming -> R.string.title_upcoming_task
 }
 
 @Composable
@@ -354,7 +394,8 @@ private fun SortOption(field: UpcomingSortField, selected: Boolean, modifier: Gl
 }
 
 @Composable
-private fun UpcomingTaskRow(task: TaskEntity, today: LocalDate, showDate: Boolean, titleLines: Int, overdue: Boolean) {
+private fun UpcomingTaskRow(task: TaskEntity, today: LocalDate, showDate: Boolean, titleLines: Int, overdue: Boolean,
+    modifier: GlanceModifier = GlanceModifier) {
     val context = LocalContext.current
     val priority = Priority.fromFloat(task.priority)
     val taskParameters = actionParametersOf(CompleteUpcomingTaskAction.taskIdKey to task.id)
@@ -372,7 +413,7 @@ private fun UpcomingTaskRow(task: TaskEntity, today: LocalDate, showDate: Boolea
         if (task.category.isNotBlank()) add(task.category.trim())
         if (priority != Priority.Default) add(context.getString(priority.nameRes))
     }.joinToString(" · ")
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = GlanceModifier.fillMaxWidth()) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.fillMaxWidth().padding(end = 12.dp)) {
         Box(contentAlignment = Alignment.Center, modifier = GlanceModifier.size(48.dp).clickable(completionAction)) {
             Image(ImageProvider(if (task.isCompleted) R.drawable.ic_check_circle else R.drawable.ic_widget_circle),
                 context.getString(if (task.isCompleted) R.string.widget_restore_task else R.string.widget_complete_task, task.content),
