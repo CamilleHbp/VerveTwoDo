@@ -1,5 +1,7 @@
 package cn.super12138.todo.ui.pages.settings
 
+import cn.super12138.todo.logic.database.taskTags
+
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -119,7 +121,7 @@ class SettingsDataViewModel(
             val tasks = taskRepository.getAllTasks().first()
 
             val header =
-                listOf("content", "category", "isCompleted", "priority", "dueDateMillis", "id", "createdAtMillis")
+                listOf("content", "category", "isCompleted", "priority", "dueDateMillis", "id", "createdAtMillis", "details", "tags", "dueTimeMinutes")
 
             val rows = tasks.map { task ->
                 with(task) {
@@ -130,7 +132,10 @@ class SettingsDataViewModel(
                         priority.toString(),
                         dueDateMillis?.toString() ?: "",
                         id.toString(),
-                        createdAtMillis?.toString() ?: ""
+                        createdAtMillis?.toString() ?: "",
+                        details,
+                        kotlinx.serialization.json.Json.encodeToString(task.taskTags),
+                        dueTimeMinutes?.toString() ?: ""
                     )
                 }
             }

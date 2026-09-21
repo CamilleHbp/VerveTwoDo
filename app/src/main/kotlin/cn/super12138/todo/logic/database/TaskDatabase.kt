@@ -7,11 +7,20 @@ import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 import cn.super12138.todo.constants.Constants
 
-@Database(entities = [TaskEntity::class], version = 6)
+@androidx.room3.ColumnTypeConverters(TaskConverters::class)
+@Database(entities = [TaskEntity::class], version = 7)
 abstract class TaskDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
 
     companion object {
+        val MIGRATION_6_7 = object : Migration(6, 7) {
+            override suspend fun migrate(connection: SQLiteConnection) {
+                connection.execSQL("ALTER TABLE ${Constants.DB_TABLE_NAME} ADD COLUMN details TEXT NOT NULL DEFAULT ''")
+                connection.execSQL("ALTER TABLE ${Constants.DB_TABLE_NAME} ADD COLUMN tags TEXT NOT NULL DEFAULT '[]'")
+                connection.execSQL("ALTER TABLE ${Constants.DB_TABLE_NAME} ADD COLUMN due_time INTEGER")
+            }
+        }
+
         val MIGRATION_5_6 = object : Migration(5, 6) {
             override suspend fun migrate(connection: SQLiteConnection) {
                 connection.execSQL("ALTER TABLE ${Constants.DB_TABLE_NAME} ADD COLUMN created_at INTEGER")

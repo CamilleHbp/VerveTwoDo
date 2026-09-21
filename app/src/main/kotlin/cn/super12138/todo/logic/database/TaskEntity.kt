@@ -16,4 +16,11 @@ data class TaskEntity(
     @ColumnInfo(name = "due_date") val dueDateMillis: Long? = null,
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val id: Int = 0,
     @ColumnInfo(name = "created_at") val createdAtMillis: Long? = null,
+    @ColumnInfo(name = "details", defaultValue = "''") val details: String = "",
+    @ColumnInfo(name = "tags", defaultValue = "'[]'") val tags: List<String> = emptyList(),
+    @ColumnInfo(name = "due_time") val dueTimeMinutes: Int? = null,
 )
+
+/** Old backups and navigation entries still carry their single category. */
+val TaskEntity.taskTags: List<String>
+    get() = tags.ifEmpty { listOf(category) }.filter { it.isNotBlank() }.distinct()
