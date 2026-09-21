@@ -9,11 +9,13 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
 import cn.super12138.todo.R
 import cn.super12138.todo.logic.TaskRepository
 import cn.super12138.todo.logic.database.TaskEntity
+import cn.super12138.todo.logic.database.taskTags
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -64,6 +66,24 @@ class WidgetTaskCreationTest {
         }
     }
 
+    @Test fun newlyDatedTaskUsesConfiguredDefaultTime() {
+        val settings = GlobalContext.get().get<cn.super12138.todo.logic.SettingsRepository>()
+        val original = runBlocking { settings.defaultDueTimeFlow.first() }
+        try {
+            runBlocking { settings.setDefaultDueTime(9 * 60 + 15) }
+            withEditor("") { scenario, _ ->
+                enterTitle()
+                save()
+                compose.waitUntil(10_000) { scenario.state == androidx.lifecycle.Lifecycle.State.DESTROYED }
+                val task = runBlocking { repository.getAllTasks().first().single { it.content == title } }
+                assertEquals(555, task.dueTimeMinutes)
+                assertEquals(9, Instant.ofEpochMilli(task.dueDateMillis!!).atZone(ZoneId.systemDefault()).hour)
+            }
+        } finally {
+            runBlocking { settings.setDefaultDueTime(original) }
+        }
+    }
+
     @Test fun blankTitleStaysOpenAndUnchangedBackCloses() {
         withEditor("Widget test") { scenario, activity ->
             save()
@@ -88,7 +108,7 @@ class WidgetTaskCreationTest {
             }
             compose.onNode(hasText(tag) and !hasSetTextAction()).performClick()
             scenario.recreate()
-            compose.onNode(hasSetTextAction() and hasText(tag)).assertExists()
+            compose.onNodeWithContentDescription(context.getString(R.string.tag_remove, tag)).assertExists()
             save()
             compose.waitUntil(10_000) { scenario.state == androidx.lifecycle.Lifecycle.State.DESTROYED }
             val task = runBlocking { repository.getAllTasks().first().single { it.content == title } }
@@ -109,6 +129,25 @@ class WidgetTaskCreationTest {
             compose.waitUntil(10_000) { scenario.state == androidx.lifecycle.Lifecycle.State.DESTROYED }
             val task = runBlocking { repository.getAllTasks().first().single { it.content == title } }
             assertEquals(tag, task.category)
+        }
+    }
+
+    @Test fun detailsMultipleTagsAndDefaultTimeSurviveRecreation() {
+        withEditor("Work") { scenario, _ ->
+            enterTitle()
+            compose.onNode(hasSetTextAction() and hasText(context.getString(R.string.task_details)))
+                .performTextInput("Bring the drawings\nConfirm the measurements")
+            compose.onNode(hasSetTextAction() and hasText(context.getString(R.string.tag_optional)))
+                .performTextReplacement("Home")
+            compose.onNodeWithText(context.getString(R.string.tag_add)).performScrollTo().performClick()
+            scenario.recreate()
+            compose.onNodeWithContentDescription(context.getString(R.string.tag_remove, "Home")).assertExists()
+            save()
+            compose.waitUntil(10_000) { scenario.state == androidx.lifecycle.Lifecycle.State.DESTROYED }
+            val task = runBlocking { repository.getAllTasks().first().single { it.content == title } }
+            assertEquals(listOf("Work", "Home"), task.taskTags)
+            assertEquals("Bring the drawings\nConfirm the measurements", task.details)
+            assertEquals(600, task.dueTimeMinutes)
         }
     }
 

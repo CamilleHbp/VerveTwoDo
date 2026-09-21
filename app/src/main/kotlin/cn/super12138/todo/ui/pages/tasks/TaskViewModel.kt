@@ -18,16 +18,18 @@ import kotlinx.coroutines.launch
 class TaskViewModel(
     private val taskRepository: TaskRepository,
     private val settingsRepository: SettingsRepository,
+    private val tagRepository: cn.super12138.todo.logic.TagRepository,
     private val confettiController: ConfettiController
 ) : ViewModel() {
     private val localUiState = MutableStateFlow(TasksPageUiState())
     val uiState: StateFlow<TasksPageUiState> = combine(
         taskRepository.getAllTasks(),
         settingsRepository.sortingMethodFlow,
+        tagRepository.colors,
         localUiState
-    ) { taskList, sortingMethod, localUiState ->
+    ) { taskList, sortingMethod, colors, localUiState ->
         val sortedList = taskList.sort(sortingMethod)
-        localUiState.copy(originalTaskList = sortedList)
+        localUiState.copy(originalTaskList = sortedList, tagColors = colors)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),

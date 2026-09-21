@@ -5,6 +5,11 @@ import cn.super12138.todo.logic.model.Priority
 data class TaskEditorUiState(
     val content: String = "",
     val category: String = "",
+    val tags: List<String> = emptyList(),
+    val details: String = "",
+    val tagColors: Map<String, Int> = emptyMap(),
+    val defaultDueTimeMinutes: Int = cn.super12138.todo.logic.DEFAULT_DUE_TIME_MINUTES,
+    val dueTimeMinutes: Int? = null,
     val priority: Priority = Priority.Default,
     val dueDateMillis: Long? = null,
     val isCompleted: Boolean = false,

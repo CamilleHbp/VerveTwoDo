@@ -19,6 +19,11 @@ class SettingsRepository(private val dataStoreManager: DataStoreManager) {
     val secureModeFlow = dataStoreManager.secureModeFlow
     val hapticFeedbackFlow = dataStoreManager.hapticFeedbackFlow
     val categoriesFlow = dataStoreManager.categoriesFlow
+    val tagColorsFlow = dataStoreManager.tagColorsFlow
+    val defaultDueTimeFlow = dataStoreManager.defaultDueTimeFlow
+    suspend fun ensureTagColors(tags: List<String>) = dataStoreManager.ensureTagColors(tags)
+    suspend fun setTagColor(tag: String, color: Int) = dataStoreManager.setTagColor(tag, color)
+    suspend fun setDefaultDueTime(minutes: Int) = dataStoreManager.setDefaultDueTime(minutes)
 
     suspend fun setDynamicColor(value: Boolean) = dataStoreManager.setDynamicColor(value)
     suspend fun setPaletteStyle(value: Int) = dataStoreManager.setPaletteStyle(value)

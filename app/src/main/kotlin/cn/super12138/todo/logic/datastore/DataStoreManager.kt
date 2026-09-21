@@ -8,6 +8,8 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import cn.super12138.todo.constants.Constants
+import cn.super12138.todo.logic.DEFAULT_DUE_TIME_MINUTES
+import cn.super12138.todo.logic.assignTagColors
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
@@ -31,6 +33,35 @@ class DataStoreManager(val dataStore: DataStore<Preferences>) {
 
     // 数据
     private val CATEGORIES = stringPreferencesKey(Constants.PREF_CATEGORIES)
+    private val TAG_COLORS = stringPreferencesKey("tag_colors")
+    private val DEFAULT_DUE_TIME = intPreferencesKey("default_due_time_minutes")
+
+    val tagColorsFlow = dataStore.data.map { preferences ->
+        Json.decodeFromString<Map<String, Int>>(preferences[TAG_COLORS] ?: "{}")
+    }
+    val defaultDueTimeFlow = dataStore.data.map { preferences ->
+        (preferences[DEFAULT_DUE_TIME] ?: DEFAULT_DUE_TIME_MINUTES).coerceIn(0, 1439)
+    }
+
+    suspend fun ensureTagColors(tags: List<String>) {
+        dataStore.edit { preferences ->
+            val existing = Json.decodeFromString<Map<String, Int>>(preferences[TAG_COLORS] ?: "{}")
+            val colors = assignTagColors(tags, existing)
+            if (colors != existing) preferences[TAG_COLORS] = Json.encodeToString(colors)
+        }
+    }
+
+    suspend fun setTagColor(tag: String, color: Int) {
+        dataStore.edit { preferences ->
+            val existing = Json.decodeFromString<Map<String, Int>>(preferences[TAG_COLORS] ?: "{}")
+            preferences[TAG_COLORS] = Json.encodeToString(existing + (tag to color))
+        }
+    }
+
+    suspend fun setDefaultDueTime(minutes: Int) {
+        require(minutes in 0..1439)
+        dataStore.edit { it[DEFAULT_DUE_TIME] = minutes }
+    }
 
     // Getters
     val dynamicColorFlow: Flow<Boolean> = dataStore.data.map { preferences ->

@@ -1,5 +1,7 @@
 package cn.super12138.todo.ui.pages.overview.components
 
+import cn.super12138.todo.logic.database.taskTags
+
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -106,7 +108,7 @@ fun ListCard(
                         ) { task ->
                             UpcomingTaskItem(
                                 content = task.content,
-                                category = task.category,
+                                category = task.taskTags.joinToString(" · "),
                                 priority = Priority.fromFloat(task.priority),
                                 dueDateMillis = task.dueDateMillis
                             )

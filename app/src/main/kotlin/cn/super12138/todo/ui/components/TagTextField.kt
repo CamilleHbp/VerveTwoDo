@@ -34,7 +34,8 @@ fun TagTextField(
     modifier: Modifier = Modifier,
     isError: Boolean = false,
     enabled: Boolean = true,
-    onDone: (() -> Unit)? = null
+    onDone: (() -> Unit)? = null,
+    onTagSelected: ((String) -> Unit)? = null
 ) {
     var expanded by remember { mutableStateOf(false) }
     val matches = remember(value, tags) { matchingTags(value, tags) }
@@ -84,7 +85,7 @@ fun TagTextField(
                 DropdownMenuItem(
                     text = { Text(tag) },
                     onClick = {
-                        onValueChange(tag)
+                        if (onTagSelected != null) onTagSelected(tag) else onValueChange(tag)
                         expanded = false
                     },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding

@@ -22,9 +22,10 @@ class SettingsDataCategoryViewModel(
     val uiState: StateFlow<SettingsDataCategoryUiState> = combine(
         settingsRepository.categoriesFlow,
         tagRepository.tags,
+        tagRepository.colors,
         localUiState
-    ) { categories, tags, localState ->
-        localState.copy(categories = categories, suggestedTags = tags)
+    ) { categories, tags, colors, localState ->
+        localState.copy(categories = tags, presetCategories = categories, suggestedTags = tags, tagColors = colors)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -33,7 +34,7 @@ class SettingsDataCategoryViewModel(
 
     fun setEditingCategory(value: String) = localUiState.update { it.copy(editingCategory = value) }
 
-    fun addCategory(new: String) {
+    fun addCategory(new: String, color: Int? = null) {
         if (new.isBlank()) return
         val old = localUiState.value.editingCategory
         viewModelScope.launch {
@@ -46,6 +47,8 @@ class SettingsDataCategoryViewModel(
                 else -> presets + category
             }
             settingsRepository.setCategories(list)
+            settingsRepository.ensureTagColors(tagRepository.tags.first() + category)
+            if (color != null) settingsRepository.setTagColor(category, color)
         }
     }
 

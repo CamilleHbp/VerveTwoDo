@@ -1,5 +1,7 @@
 package cn.super12138.todo.utils
 
+import cn.super12138.todo.logic.database.taskTags
+
 import android.content.Context
 import android.os.Build
 import android.widget.Toast
@@ -201,7 +203,7 @@ fun List<TaskEntity>.sort(sortingMethod: SortingMethod): List<TaskEntity> = when
 
     SortingMethod.Category -> this.sortedWith(
         comparator = compareBy<TaskEntity> { it.isCompleted }
-            .thenBy { it.category }
+            .thenBy { it.taskTags.joinToString() }
     )
 
     SortingMethod.Priority -> this.sortedWith(
@@ -212,7 +214,7 @@ fun List<TaskEntity>.sort(sortingMethod: SortingMethod): List<TaskEntity> = when
 
     SortingMethod.Completion -> this.sortedWith(
         comparator = compareBy<TaskEntity> { it.isCompleted }
-            .thenBy { it.category }
+            .thenBy { it.taskTags.joinToString() }
             .thenByDescending { it.priority }
     ) // 未完成的在前
     SortingMethod.AlphabeticalAscending -> this.sortedWith(

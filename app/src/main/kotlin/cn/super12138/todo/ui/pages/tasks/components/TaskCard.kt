@@ -8,6 +8,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -70,6 +72,10 @@ fun TaskCard(
     priority: Priority,
     selected: Boolean,
     modifier: Modifier = Modifier,
+    details: String = "",
+    dueTimeMinutes: Int? = null,
+    tags: List<String> = listOf(category).filter { it.isNotBlank() },
+    tagColors: Map<String, Int> = emptyMap(),
     onClick: () -> Unit = {},
     onLongClick: () -> Unit = {},
     onChecked: () -> Unit = {},
@@ -190,16 +196,32 @@ fun TaskCard(
                     }
                 }
 
+                if (details.isNotBlank()) Text(details,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2, overflow = TextOverflow.Ellipsis)
+                dueTimeMinutes?.let { Text(cn.super12138.todo.logic.formatDueTime(it),
+                    style = MaterialTheme.typography.labelMedium, color = dateColor) }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(VerveDoDefaults.contentPadding / 2),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    CategoryBadge(
-                        category = category,
-                        containerColor = badgeColor,
-                        modifier = Modifier.weight(weight = 1f, fill = false)
-                    )
+                    androidx.compose.foundation.layout.FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier.weight(1f, fill = false)
+                    ) {
+                        val colors = cn.super12138.todo.logic.assignTagColors(tags, tagColors)
+                        tags.forEach { tag ->
+                            Row(verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                Box(Modifier.size(8.dp).background(Color(colors.getValue(tag)), CircleShape))
+                                Text(tag, style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                        }
+                    }
 
                     Text(
                         text = stringResource(priority.nameRes),
@@ -342,4 +364,3 @@ private fun TaskCardPreview() {
         selected = false
     )
 }
-

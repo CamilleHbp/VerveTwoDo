@@ -15,6 +15,11 @@ class SettingsInterfaceInteractionViewModel(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
     val localUiState = MutableStateFlow(SettingsInterfaceUiState())
+    val defaultDueTime = settingsRepository.defaultDueTimeFlow.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), cn.super12138.todo.logic.DEFAULT_DUE_TIME_MINUTES)
+    fun setDefaultDueTime(minutes: Int) {
+        viewModelScope.launch { settingsRepository.setDefaultDueTime(minutes) }
+    }
     val interfaceUiState: StateFlow<SettingsInterfaceUiState> = combine(
         settingsRepository.sortingMethodFlow,
         settingsRepository.textFieldAutoFocusFlow,

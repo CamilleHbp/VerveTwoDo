@@ -2,8 +2,9 @@ package cn.super12138.todo.logic
 
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.onEach
 
-/** Tags remain category strings so existing tasks, backups and widget filters keep their identity. */
+/** Names preserve existing category and widget-filter identities. */
 class TagRepository(
     settingsRepository: SettingsRepository,
     taskRepository: TaskRepository
@@ -11,6 +12,10 @@ class TagRepository(
     val tags = combine(settingsRepository.categoriesFlow, taskRepository.getCategories()) { presets, used ->
         tagCatalog(presets, used)
     }.distinctUntilChanged()
+
+    val colors = combine(tags, settingsRepository.tagColorsFlow) { tags, colors ->
+        assignTagColors(tags, colors)
+    }.distinctUntilChanged().onEach { colors -> settingsRepository.ensureTagColors(colors.keys.toList()) }
 }
 
 internal fun tagCatalog(presets: List<String>, used: List<String>): List<String> =

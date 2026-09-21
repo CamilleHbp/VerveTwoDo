@@ -36,6 +36,8 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import cn.super12138.todo.R
+import cn.super12138.todo.logic.pickerDateMillis
+import cn.super12138.todo.logic.localDateFromPicker
 import cn.super12138.todo.ui.VerveDoDefaults
 import cn.super12138.todo.utils.SystemUtils
 import cn.super12138.todo.utils.VibrationUtils
@@ -61,7 +63,7 @@ fun DueDateChooser(
     var openDialog by remember { mutableStateOf(false) }
     var menuExpanded by remember { mutableStateOf(false) }
 
-    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = dateMillis)
+    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = dateMillis?.let { pickerDateMillis(it) })
     var selectedItem by rememberSaveable { mutableStateOf(DueDateSelection.None) }
 
     val confirmEnabled by remember { derivedStateOf { datePickerState.selectedDateMillis != null } }
@@ -100,7 +102,10 @@ fun DueDateChooser(
                 DueDateSelection.Today -> onDateChange(SystemUtils.getStartOfDayMillis(0))
                 DueDateSelection.Tomorrow -> onDateChange(SystemUtils.getStartOfDayMillis(1))
                 DueDateSelection.NextWeek -> onDateChange(SystemUtils.getStartOfDayMillis(7))
-                DueDateSelection.Customization -> openDialog = true
+                DueDateSelection.Customization -> {
+                    datePickerState.selectedDateMillis = dateMillis?.let { pickerDateMillis(it) }
+                    openDialog = true
+                }
             }
         },
         specificDateMillis = dateMillis
@@ -119,7 +124,7 @@ fun DueDateChooser(
                     enabled = confirmEnabled,
                     onClick = {
                         VibrationUtils.performHapticFeedback(view)
-                        onDateChange(datePickerState.selectedDateMillis)
+                        onDateChange(datePickerState.selectedDateMillis?.let { localDateFromPicker(it) })
                         openDialog = false
                     },
                     shapes = ButtonDefaults.shapes(),

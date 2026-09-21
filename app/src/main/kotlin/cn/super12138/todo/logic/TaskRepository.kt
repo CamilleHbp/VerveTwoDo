@@ -2,7 +2,9 @@ package cn.super12138.todo.logic
 
 import cn.super12138.todo.logic.database.TaskDao
 import cn.super12138.todo.logic.database.TaskEntity
+import cn.super12138.todo.logic.database.taskTags
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class TaskRepository(private val taskDao: TaskDao) {
     suspend fun insertTask(task: TaskEntity) {
@@ -15,7 +17,7 @@ class TaskRepository(private val taskDao: TaskDao) {
 
     fun getAllTasks(): Flow<List<TaskEntity>> = taskDao.getAll()
 
-    fun getCategories(): Flow<List<String>> = taskDao.getCategories()
+    fun getCategories(): Flow<List<String>> = taskDao.getAll().map { tasks -> tasks.flatMap { it.taskTags }.distinct() }
 
     suspend fun updateTask(task: TaskEntity) {
         taskDao.update(task)

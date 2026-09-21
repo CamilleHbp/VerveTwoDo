@@ -3,6 +3,11 @@ package cn.super12138.todo.ui.pages.settings
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import cn.super12138.todo.ui.components.DueTimeDialog
+import cn.super12138.todo.logic.formatDueTime
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -25,6 +30,8 @@ fun SettingsInterface(
     viewModel: SettingsInterfaceInteractionViewModel = koinViewModel()
 ) {
     val uiState by viewModel.interfaceUiState.collectAsStateWithLifecycle()
+    val defaultDueTime by viewModel.defaultDueTime.collectAsStateWithLifecycle()
+    var showDueTime by rememberSaveable { mutableStateOf(false) }
 
     val sortingList = SortingMethod.entries.map {
         SettingsRadioOptions(
@@ -70,6 +77,15 @@ fun SettingsInterface(
             }
 
             item {
+                SettingsItem(
+                    leadingIconRes = R.drawable.ic_pending,
+                    title = stringResource(R.string.pref_default_due_time),
+                    description = formatDueTime(defaultDueTime),
+                    onClick = { showDueTime = true }
+                )
+            }
+
+            item {
                 SettingsCategory(stringResource(R.string.pref_category_global))
                 SwitchSettingsItem(
                     checked = uiState.secureMode,
@@ -91,6 +107,10 @@ fun SettingsInterface(
                 SettingsPlainBox(stringResource(R.string.pref_haptic_feedback_more_info))
             }
         }
+
+        if (showDueTime) DueTimeDialog(defaultDueTime,
+            onConfirm = { viewModel.setDefaultDueTime(it); showDueTime = false },
+            onDismiss = { showDueTime = false })
 
         SettingsRadioDialog(
             visible = uiState.showSortingMethodDialog,

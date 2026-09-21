@@ -1,5 +1,7 @@
 package cn.super12138.todo.ui.pages.tasks
 
+import cn.super12138.todo.logic.database.taskTags
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -82,7 +84,8 @@ fun SharedTransitionScope.TasksPage(
             uiState.originalTaskList.filter { task ->
                 listOf(
                     task.content,
-                    task.category,
+                    task.details,
+                    task.taskTags.joinToString(" · "),
                     task.dueDateMillis?.toLocalDateString() ?: ""
                 ).any {
                     it.contains(uiState.searchQuery, ignoreCase = true)
@@ -200,7 +203,11 @@ fun SharedTransitionScope.TasksPage(
                             }
                             TaskCard(
                                 content = task.content,
-                                category = task.category,
+                                category = task.taskTags.joinToString(" · "),
+                                tags = task.taskTags,
+                                tagColors = uiState.tagColors,
+                                details = task.details,
+                                dueTimeMinutes = task.dueTimeMinutes,
                                 completed = task.isCompleted,
                                 dueDateMillis = task.dueDateMillis,
                                 priority = priority,

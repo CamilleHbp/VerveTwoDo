@@ -3,6 +3,7 @@ package cn.super12138.todo.ui.pages.tasks
 import cn.super12138.todo.logic.database.TaskEntity
 
 data class TasksPageUiState(
+    val tagColors: Map<String, Int> = emptyMap(),
     val originalTaskList: List<TaskEntity> = emptyList(),
     val selectedTaskIds: Set<Int> = emptySet(),
     val inSearchMode: Boolean = false,

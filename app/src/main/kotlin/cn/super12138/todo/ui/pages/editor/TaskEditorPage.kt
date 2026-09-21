@@ -64,6 +64,12 @@ import cn.super12138.todo.ui.VerveDoDefaults
 import cn.super12138.todo.ui.components.CheckboxWithLabel
 import cn.super12138.todo.ui.components.ConfirmDialog
 import cn.super12138.todo.ui.components.TagTextField
+import cn.super12138.todo.ui.components.TagChip
+import cn.super12138.todo.ui.components.DueTimeDialog
+import cn.super12138.todo.logic.assignTagColors
+import cn.super12138.todo.logic.formatDueTime
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.OutlinedTextField
 import cn.super12138.todo.ui.components.TodoFloatingActionButton
 import cn.super12138.todo.ui.components.TopAppBarScaffold
 import cn.super12138.todo.ui.pages.editor.components.DueDateChooser
@@ -125,6 +131,7 @@ fun TaskEditorPage(
     val snackbarHostState = remember { SnackbarHostState() }
     val saveError = stringResource(R.string.error_task_save)
     val saveLabel = stringResource(R.string.action_save)
+    var showTimePicker by remember { mutableStateOf(false) }
     var validate by remember { mutableStateOf(false) } // @ChatGPT，用于判断用户是否按下了保存按钮。按下了开始进行错误检测
     val isContentError by remember { derivedStateOf { validate && uiState.content.isBlank() } }
 
@@ -247,14 +254,37 @@ fun TaskEditorPage(
                 )
             }
             item {
-                TagTextField(
-                    value = uiState.category,
-                    onValueChange = viewModel::setCategoryText,
-                    tags = uiState.categoryList,
-                    label = stringResource(R.string.tag_optional),
+                OutlinedTextField(
+                    value = uiState.details,
+                    onValueChange = viewModel::setDetailsText,
+                    label = { Text(stringResource(R.string.task_details)) },
+                    minLines = 2,
+                    maxLines = 6,
                     enabled = !uiState.isSaving,
                     modifier = Modifier.fillMaxWidth()
                 )
+            }
+            item {
+                val colors = assignTagColors(uiState.tags, uiState.tagColors)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    uiState.tags.forEach { tag ->
+                        TagChip(tag, colors.getValue(tag), { viewModel.removeTag(tag) }, !uiState.isSaving)
+                    }
+                }
+                TagTextField(
+                    value = uiState.category,
+                    onValueChange = viewModel::setCategoryText,
+                    tags = uiState.categoryList - uiState.tags.toSet(),
+                    label = stringResource(R.string.tag_optional),
+                    enabled = !uiState.isSaving,
+                    onDone = { viewModel.addTag() },
+                    onTagSelected = { viewModel.addTag(it) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                TextButton(onClick = { viewModel.addTag() },
+                    enabled = uiState.category.isNotBlank() && !uiState.isSaving) {
+                    Text(stringResource(R.string.tag_add))
+                }
             }
             item {
                 val priorityList = Priority.entries
@@ -289,6 +319,17 @@ fun TaskEditorPage(
                     dateMillis = uiState.dueDateMillis,
                     onDateChange = { viewModel.setDueDate(it) }
                 )
+                if (uiState.dueDateMillis != null) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        TextButton(onClick = { showTimePicker = true }) {
+                            Text(uiState.dueTimeMinutes?.let { stringResource(R.string.due_time_value, formatDueTime(it)) }
+                                ?: stringResource(R.string.add_due_time))
+                        }
+                        if (uiState.dueTimeMinutes != null) TextButton(onClick = { viewModel.setDueTime(null) }) {
+                            Text(stringResource(R.string.remove_due_time))
+                        }
+                    }
+                }
                 if (task != null) {
                     CheckboxWithLabel(
                         label = stringResource(R.string.tip_mark_completed),
@@ -306,6 +347,12 @@ fun TaskEditorPage(
             }
         }
     }
+
+    if (showTimePicker) DueTimeDialog(
+        initialMinutes = uiState.dueTimeMinutes ?: uiState.defaultDueTimeMinutes,
+        onConfirm = { viewModel.setDueTime(it); showTimePicker = false },
+        onDismiss = { showTimePicker = false }
+    )
 
     ConfirmDialog(
         visible = uiState.showExitConfirmDialog,

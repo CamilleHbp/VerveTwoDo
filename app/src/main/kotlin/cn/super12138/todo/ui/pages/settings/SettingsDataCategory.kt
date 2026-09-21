@@ -3,6 +3,13 @@ package cn.super12138.todo.ui.pages.settings
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import cn.super12138.todo.logic.nextTagColor
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.items
@@ -111,6 +118,10 @@ fun SettingsDataCategory(
                         key = { category -> category }
                     ) { category ->
                         SettingsItem(
+                            leadingIcon = {
+                                Box(Modifier.size(16.dp).background(Color(uiState.tagColors[category]
+                                    ?: nextTagColor(emptySet())), CircleShape))
+                            },
                             headlineContent = {
                                 Text(
                                     text = category,
@@ -120,6 +131,7 @@ fun SettingsDataCategory(
                                 )
                             },
                             trailingContent = {
+                                if (category in uiState.presetCategories) {
                                 FilledTonalIconButton(
                                     shapes = IconButtonDefaults.shapes(),
                                     onClick = {
@@ -131,6 +143,7 @@ fun SettingsDataCategory(
                                         painter = painterResource(R.drawable.ic_delete),
                                         contentDescription = stringResource(R.string.action_delete)
                                     )
+                                }
                                 }
                             },
                             onClick = {
@@ -153,6 +166,9 @@ fun SettingsDataCategory(
             initialCategory = uiState.editingCategory,
             suggestedTags = uiState.suggestedTags,
             onSave = { viewModel.addCategory(it) },
+            initialColor = uiState.tagColors[uiState.editingCategory]
+                ?: nextTagColor(uiState.tagColors.values.toSet()),
+            onSaveColor = { tag, color -> viewModel.addCategory(tag, color) },
             onDismiss = { viewModel.hideAddDialog() }
         )
     }

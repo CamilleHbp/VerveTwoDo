@@ -29,6 +29,8 @@ data class SettingsDataUiState(
 )
 
 data class SettingsDataCategoryUiState(
+    val presetCategories: List<String> = emptyList(),
+    val tagColors: Map<String, Int> = emptyMap(),
     val categories: List<String> = emptyList(),
     val suggestedTags: List<String> = emptyList(),
     val editingCategory: String = "",

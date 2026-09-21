@@ -6,7 +6,7 @@
     <string name="page_settings">设置</string>
     <string name="action_add_task">添加任务</string>
     <string name="tip_no_task">目前没有要完成的任务，好好休息一下吧~</string>
-    <string name="placeholder_add_todo">任务内容</string>
+    <string name="placeholder_add_todo">标题</string>
     <string name="action_cancel">取消</string>
     <string name="action_save">保存</string>
     <string name="error_no_content_entered">没有输入内容</string>
@@ -99,11 +99,11 @@
     <string name="label_enter_category_name">输入分类名称</string>
     <string name="accessibility_progress_tasks">当前共有 %1$d 项任务，其中 %2$d 项已完成，%3$d 项未完成</string>
     <string name="accessibility_progress_no_tasks">当前没有任务</string>
-    <string name="pref_category_category_management">分类管理</string>
+    <string name="pref_category_category_management">标签</string>
     <string name="pref_category_data_management">数据管理</string>
     <string name="pref_category_management_desc">保存常用标签以供选择。编辑预设不会更改现有任务。</string>
     <string name="action_add_category">添加分类</string>
-    <string name="tip_enter_category">输入分类名称</string>
+    <string name="tip_enter_category">标签名称</string>
     <string name="tip_no_category_chip">当前暂无自定义分类，你可以在设置中添加分类</string>
     <string name="tip_no_category_page">暂无自定义分类</string>
     <string name="tip_default_category">默认分类，请修改</string>
@@ -223,4 +223,15 @@
     <string name="widget_later">以后</string>
     <string name="widget_expand_section">展开%1$s，%2$s</string>
     <string name="widget_collapse_section">折叠%1$s，%2$s</string>
+    <string name="task_details">详情（可选）</string>
+    <string name="tag_add">添加标签</string>
+    <string name="tag_remove">移除标签 %1$s</string>
+    <string name="tag_color">标签颜色</string>
+    <string name="tag_color_hint">选择颜色或输入十六进制颜色代码，例如 #3877B8</string>
+    <string name="tag_color_value">颜色 %1$s</string>
+    <string name="label_due_time">截止时间</string>
+    <string name="due_time_value">截止于 %1$s</string>
+    <string name="add_due_time">添加时间</string>
+    <string name="remove_due_time">移除时间</string>
+    <string name="pref_default_due_time">默认截止时间</string>
 </resources>
