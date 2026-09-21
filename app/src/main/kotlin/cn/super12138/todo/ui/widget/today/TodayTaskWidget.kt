@@ -1,5 +1,10 @@
 package cn.super12138.todo.ui.widget.today
 
+import cn.super12138.todo.logic.TagRepository
+import cn.super12138.todo.logic.database.taskTags
+import cn.super12138.todo.logic.isDueOn
+import kotlinx.coroutines.flow.first
+
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -44,17 +49,21 @@ class TodayTaskWidget : GlanceAppWidget(), KoinComponent {
     val taskRepository: TaskRepository = get()
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
+        val colors = get<TagRepository>().colors
+        val initialColors = colors.first()
         provideContent {
+            val tagColors by colors.collectAsState(initialColors)
             val scope = rememberCoroutineScope()
             val allTask by taskRepository.getAllTasks().collectAsState(emptyList())
             val todayTask = remember(allTask) {
                 allTask
-                    .filter { it.dueDateMillis == SystemUtils.getStartOfDayMillis(0) }
+                    .filter { isDueOn(it.dueDateMillis) }
                     .sort(SortingMethod.Priority)
             }
 
             GlanceTheme {
                 TodayTaskApp(
+                    tagColors = tagColors,
                     taskList = todayTask,
                     onChecked = { task ->
                         scope.launch {
@@ -71,6 +80,7 @@ class TodayTaskWidget : GlanceAppWidget(), KoinComponent {
 @Composable
 private fun TodayTaskApp(
     taskList: List<TaskEntity>,
+    tagColors: Map<String, Int>,
     modifier: GlanceModifier = GlanceModifier,
     onChecked: (TaskEntity) -> Unit = {}
 ) {
@@ -118,7 +128,10 @@ private fun TodayTaskApp(
                     ) {
                         GlanceTaskCard(
                             content = it.content,
-                            category = it.category,
+                            category = it.taskTags.joinToString(" · "),
+                            tags = it.taskTags,
+                            tagColors = tagColors,
+                            dueTimeMinutes = it.dueTimeMinutes,
                             dueDateMillis = it.dueDateMillis,
                             isCompleted = it.isCompleted,
                             showDueDate = false,
@@ -136,7 +149,10 @@ private fun TodayTaskApp(
                     ) {
                         GlanceTaskCard(
                             content = it.content,
-                            category = it.category,
+                            category = it.taskTags.joinToString(" · "),
+                            tags = it.taskTags,
+                            tagColors = tagColors,
+                            dueTimeMinutes = it.dueTimeMinutes,
                             dueDateMillis = it.dueDateMillis,
                             isCompleted = it.isCompleted,
                             priority = Priority.fromFloat(it.priority),

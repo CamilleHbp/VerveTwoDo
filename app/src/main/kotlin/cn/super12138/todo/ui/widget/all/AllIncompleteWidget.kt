@@ -1,5 +1,10 @@
 package cn.super12138.todo.ui.widget.all
 
+import cn.super12138.todo.logic.TagRepository
+import cn.super12138.todo.logic.database.taskTags
+import cn.super12138.todo.logic.isDueOn
+import kotlinx.coroutines.flow.first
+
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -39,7 +44,10 @@ class AllIncompleteWidget : GlanceAppWidget(), KoinComponent {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val taskRepository: TaskRepository = get()
 
+        val colors = get<TagRepository>().colors
+        val initialColors = colors.first()
         provideContent {
+            val tagColors by colors.collectAsState(initialColors)
             val scope = rememberCoroutineScope()
             val allTask by taskRepository.getAllTasks().collectAsState(emptyList())
             val allIncompleteTask = remember(allTask) {
@@ -48,6 +56,7 @@ class AllIncompleteWidget : GlanceAppWidget(), KoinComponent {
 
             GlanceTheme {
                 TaskWidgetApp(
+                    tagColors = tagColors,
                     taskList = allIncompleteTask,
                     onChecked = { task ->
                         scope.launch {
@@ -64,6 +73,7 @@ class AllIncompleteWidget : GlanceAppWidget(), KoinComponent {
 @Composable
 private fun TaskWidgetApp(
     taskList: List<TaskEntity>,
+    tagColors: Map<String, Int>,
     modifier: GlanceModifier = GlanceModifier,
     onChecked: (TaskEntity) -> Unit = {}
 ) {
@@ -102,7 +112,10 @@ private fun TaskWidgetApp(
                 items(items = taskList, itemId = { task -> task.id.toLong() }) {
                     GlanceTaskCard(
                         content = it.content,
-                        category = it.category,
+                        category = it.taskTags.joinToString(" · "),
+                            tags = it.taskTags,
+                            tagColors = tagColors,
+                            dueTimeMinutes = it.dueTimeMinutes,
                         dueDateMillis = it.dueDateMillis,
                         isCompleted = it.isCompleted,
                         priority = Priority.fromFloat(it.priority),

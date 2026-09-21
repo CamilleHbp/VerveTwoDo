@@ -1,6 +1,7 @@
 package cn.super12138.todo.ui.widget.upcoming
 
 import cn.super12138.todo.logic.database.TaskEntity
+import cn.super12138.todo.logic.database.taskTags
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
@@ -69,7 +70,8 @@ fun upcomingTaskGroups(
     val start = today.atStartOfDay(zone).toInstant().toEpochMilli()
     val dated = tasks.filter {
         it.dueDateMillis != null && (it.dueDateMillis >= start || !it.isCompleted) &&
-            (categories.isEmpty() || it.category.ifBlank { "" } in categories)
+            (categories.isEmpty() || it.taskTags.any { tag -> tag in categories } ||
+                (it.taskTags.isEmpty() && "" in categories))
     }
     val byDate = compareBy<TaskEntity> { it.dueDateMillis }
         .thenByDescending { it.priority }.thenBy { it.id }

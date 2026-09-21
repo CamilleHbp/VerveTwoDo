@@ -42,6 +42,9 @@ fun GlanceTaskCard(
     isCompleted: Boolean,
     priority: Priority,
     dueDateMillis: Long?,
+    tags: List<String> = emptyList(),
+    tagColors: Map<String, Int> = emptyMap(),
+    dueTimeMinutes: Int? = null,
     modifier: GlanceModifier = GlanceModifier,
     showDueDate: Boolean = true,
     dueDateLabel: String? = null,
@@ -59,6 +62,16 @@ fun GlanceTaskCard(
             .wrapContentHeight()
             .padding(vertical = VerveDoDefaults.contentPadding / 2)
     ) {
+        if (!isCompleted) {
+            CheckButton(onCheckedAction = onCheckedAction, onChecked = onChecked)
+            Spacer(GlanceModifier.size(8.dp))
+        }
+        TagColorStrokes(tags, tagColors)
+        if (dueTimeMinutes != null) {
+            Text(cn.super12138.todo.logic.formatDueTime(dueTimeMinutes),
+                style = GlanceTypography.labelMedium.copy(color = GlanceTheme.colors.onSurfaceVariant),
+                modifier = GlanceModifier.padding(end = 8.dp))
+        }
         Column(
             verticalAlignment = Alignment.CenterVertically,
             modifier = GlanceModifier.defaultWeight()
@@ -101,9 +114,6 @@ fun GlanceTaskCard(
             }
         }
 
-        if (!isCompleted) {
-            CheckButton(onCheckedAction = onCheckedAction, onChecked = onChecked)
-        }
     }
 }
 
@@ -146,7 +156,7 @@ fun CheckButton(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .background(backgroundColor)
-            .size(40.dp)
+            .size(48.dp)
             .cornerRadius(100.dp)
             .padding(VerveDoDefaults.contentPadding / 2)
             .clickable(onCheckedAction ?: action(block = onChecked))

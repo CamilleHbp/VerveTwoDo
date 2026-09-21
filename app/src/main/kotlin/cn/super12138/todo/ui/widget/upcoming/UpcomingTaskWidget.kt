@@ -54,6 +54,10 @@ import androidx.glance.unit.ColorProvider
 import cn.super12138.todo.R
 import cn.super12138.todo.logic.SettingsRepository
 import cn.super12138.todo.logic.TaskRepository
+import cn.super12138.todo.logic.TagRepository
+import cn.super12138.todo.logic.formatDueTime
+import cn.super12138.todo.logic.database.taskTags
+import cn.super12138.todo.ui.widget.components.TagColorStrokes
 import cn.super12138.todo.logic.database.TaskEntity
 import cn.super12138.todo.logic.model.Priority
 import cn.super12138.todo.ui.activities.MainActivity
@@ -78,13 +82,16 @@ class UpcomingTaskWidget : GlanceAppWidget(), KoinComponent {
         val categories = get<SettingsRepository>().categoriesFlow
         val initialTasks = tasks.first()
         val initialCategories = categories.first()
+        val colors = get<TagRepository>().colors
+        val initialColors = colors.first()
         provideContent {
             val allTasks by tasks.collectAsState(initialTasks)
             val savedCategories by categories.collectAsState(initialCategories)
+            val tagColors by colors.collectAsState(initialColors)
             val preferences = currentState<Preferences>()
             val sort = UpcomingWidgetPreferences.sort(preferences)
             val selected = UpcomingWidgetPreferences.categories(preferences)
-            val tags = (savedCategories + allTasks.map { it.category } + selected)
+            val tags = (savedCategories + allTasks.flatMap { it.taskTags } + selected)
                 .filter { it.isNotBlank() }.distinct().sortedWith(String.CASE_INSENSITIVE_ORDER)
             val today = LocalDate.now()
             val undoUntil = preferences[UpcomingWidgetPreferences.undoUntilKey] ?: 0L
@@ -104,7 +111,7 @@ class UpcomingTaskWidget : GlanceAppWidget(), KoinComponent {
                 UpcomingWidgetContent(upcomingTaskGroups(allTasks, sort, selected, today), sort, selected,
                     tags, today, preferences[UpcomingWidgetPreferences.controlsKey] ?: true,
                     preferences[UpcomingWidgetPreferences.panelKey].orEmpty(), undoTitle,
-                    UpcomingWidgetPreferences.collapsedSections(preferences))
+                    UpcomingWidgetPreferences.collapsedSections(preferences), tagColors)
             }
         }
     }
@@ -118,7 +125,7 @@ private fun controlAction(command: String, value: String = ""): Action =
 private fun UpcomingWidgetContent(
     groups: List<UpcomingTaskGroup>, sort: UpcomingTaskSort, selected: Set<String>,
     tags: List<String>, today: LocalDate, controlsVisible: Boolean, panel: String, undoTitle: String?,
-    collapsedSections: Set<String>
+    collapsedSections: Set<String>, tagColors: Map<String, Int>
 ) {
     val context = LocalContext.current
     val size = LocalSize.current
@@ -203,7 +210,7 @@ private fun UpcomingWidgetContent(
                             }
                             if (!collapsed) {
                                 items(group.tasks, itemId = { it.id.toLong() }) { task ->
-                                    UpcomingTaskRow(task, today, showDate,
+                                    UpcomingTaskRow(task, today, showDate, tagColors,
                                         if (size.height >= 300.dp && !narrow) 2 else 1, group.isOverdue,
                                         GlanceModifier.fillMaxWidth().sectionTint(group.section.color(), alpha = 0.04f,
                                             roundBottom = task.id == group.tasks.last().id))
@@ -394,7 +401,7 @@ private fun SortOption(field: UpcomingSortField, selected: Boolean, modifier: Gl
 }
 
 @Composable
-private fun UpcomingTaskRow(task: TaskEntity, today: LocalDate, showDate: Boolean, titleLines: Int, overdue: Boolean,
+private fun UpcomingTaskRow(task: TaskEntity, today: LocalDate, showDate: Boolean, tagColors: Map<String, Int>, titleLines: Int, overdue: Boolean,
     modifier: GlanceModifier = GlanceModifier) {
     val context = LocalContext.current
     val priority = Priority.fromFloat(task.priority)
@@ -406,13 +413,12 @@ private fun UpcomingTaskRow(task: TaskEntity, today: LocalDate, showDate: Boolea
         flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         putExtra(MainActivity.EXTRA_WIDGET_TASK_ID, task.id)
     })
-    val metadata = buildList {
+    val schedule = buildList {
         if (showDate) task.dueDateMillis?.let {
             add(dateLabel(context, Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate(), today))
         }
-        if (task.category.isNotBlank()) add(task.category.trim())
-        if (priority != Priority.Default) add(context.getString(priority.nameRes))
-    }.joinToString(" · ")
+        task.dueTimeMinutes?.let { add(formatDueTime(it)) }
+    }.joinToString("\n")
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.fillMaxWidth().padding(end = 12.dp)) {
         Box(contentAlignment = Alignment.Center, modifier = GlanceModifier.size(48.dp).clickable(completionAction)) {
             Image(ImageProvider(if (task.isCompleted) R.drawable.ic_check_circle else R.drawable.ic_widget_circle),
@@ -421,13 +427,19 @@ private fun UpcomingTaskRow(task: TaskEntity, today: LocalDate, showDate: Boolea
                 modifier = GlanceModifier.size(22.dp))
         }
         Spacer(GlanceModifier.width(4.dp))
+        TagColorStrokes(task.taskTags, tagColors)
+        if (schedule.isNotEmpty()) Text(schedule,
+            style = GlanceTypography.labelMedium.copy(
+                color = if (overdue) GlanceTheme.colors.error else GlanceTheme.colors.onSurfaceVariant,
+                fontWeight = FontWeight.Normal), maxLines = 3,
+            modifier = GlanceModifier.width(64.dp).padding(end = 8.dp).clickable(open))
         Box(contentAlignment = Alignment.CenterStart, modifier = GlanceModifier.defaultWeight().clickable(open)) {
             Spacer(GlanceModifier.height(48.dp))
             Column(modifier = GlanceModifier.fillMaxWidth().padding(vertical = 8.dp)) {
                 Text(task.content, style = GlanceTypography.titleMedium.copy(fontWeight = FontWeight.Normal,
                     color = if (task.isCompleted) GlanceTheme.colors.onSurfaceVariant else GlanceTheme.colors.onSurface,
                     textDecoration = if (task.isCompleted) TextDecoration.LineThrough else TextDecoration.None), maxLines = titleLines)
-                if (metadata.isNotEmpty()) Text(metadata,
+                if (priority != Priority.Default) Text(context.getString(priority.nameRes),
                     style = GlanceTypography.labelMedium.copy(
                         color = if (overdue) GlanceTheme.colors.error else GlanceTheme.colors.onSurfaceVariant,
                         fontWeight = FontWeight.Normal), maxLines = 1)
@@ -439,7 +451,7 @@ private fun UpcomingTaskRow(task: TaskEntity, today: LocalDate, showDate: Boolea
 private fun dateLabel(context: Context, date: LocalDate, today: LocalDate): String = when (date) {
     today -> context.getString(R.string.time_today)
     today.plusDays(1) -> context.getString(R.string.time_tomorrow)
-    else -> date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
+    else -> date.format(DateTimeFormatter.ofPattern(if (date.year == today.year) "d MMM" else "d MMM yy"))
 }
 
 private fun UpcomingTaskSort.shortLabelRes(): Int = when (this) {

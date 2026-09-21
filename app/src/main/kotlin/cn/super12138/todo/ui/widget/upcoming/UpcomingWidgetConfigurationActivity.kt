@@ -1,5 +1,7 @@
 package cn.super12138.todo.ui.widget.upcoming
 
+import cn.super12138.todo.logic.database.taskTags
+
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Intent
@@ -93,7 +95,7 @@ class UpcomingWidgetConfigurationActivity : ComponentActivity() {
                     val categories by settingsRepository.categoriesFlow.collectAsStateWithLifecycle(emptyList())
                     val tasks by tasksFlow.collectAsStateWithLifecycle(emptyList())
                     val tags = remember(categories, tasks, initialCategories) {
-                        (categories + tasks.map { it.category } + initialCategories)
+                        (categories + tasks.flatMap { it.taskTags } + initialCategories)
                             .filter { it.isNotBlank() }.distinct().sortedWith(String.CASE_INSENSITIVE_ORDER)
                     }
                     var saving by remember { mutableStateOf(false) }

@@ -249,6 +249,14 @@ class UpcomingTasksTest {
         assertEquals(listOf(2, 3), result[1].tasks.map { it.id })
     }
 
+    @Test fun anyOfMultipleTaskTagsMatchesOnceAndEmptyFilterOnlyIncludesUntagged() {
+        val tasks = listOf(task(1).copy(tags = listOf("Work", "Home")), task(2), task(3, "Work"))
+        assertEquals(listOf(1), ids(tasks, tags = setOf("Home")))
+        assertEquals(listOf(1, 3), ids(tasks, tags = setOf("Work", "Home")))
+        assertEquals(listOf(2), ids(tasks, tags = setOf("")))
+        assertEquals(listOf(1, 2), ids(tasks, tags = setOf("", "Home")))
+    }
+
     @Test fun laterStartsAfterSevenDaysRegardlessOfWeekday() {
         (0L..6L).forEach { offset ->
             val date = today.plusDays(offset)
