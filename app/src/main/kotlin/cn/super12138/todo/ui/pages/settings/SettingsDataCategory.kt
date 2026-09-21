@@ -151,6 +151,7 @@ fun SettingsDataCategory(
         CategoryPromptDialog(
             visible = uiState.showAddDialog,
             initialCategory = uiState.editingCategory,
+            suggestedTags = uiState.suggestedTags,
             onSave = { viewModel.addCategory(it) },
             onDismiss = { viewModel.hideAddDialog() }
         )

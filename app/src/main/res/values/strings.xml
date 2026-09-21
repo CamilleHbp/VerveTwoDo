@@ -103,7 +103,7 @@
     <string name="accessibility_progress_no_tasks">There are no tasks at the moment.</string>
     <string name="pref_category_category_management">Category Management</string>
     <string name="pref_category_data_management">Data Management</string>
-    <string name="pref_category_management_desc">Manage the category of tasks</string>
+    <string name="pref_category_management_desc">Save favorite tags for suggestions. Editing a preset leaves existing tasks unchanged.</string>
     <string name="action_add_category">Add Category</string>
     <string name="tip_enter_category">Enter a category</string>
     <string name="tip_no_category_chip">There are currently no custom categories. You can add categories in the settings.</string>
@@ -117,6 +117,8 @@
     <string name="page_tasks">Tasks</string>
     <string name="page_overview">Overview</string>
     <string name="tip_short_category">Keep category names concise</string>
+    <string name="tag_input_hint">Choose an existing tag or type a new one</string>
+    <string name="tag_optional">Tag (optional)</string>
     <string name="action_clear">Clear</string>
     <string name="title_upcoming_task">Upcoming</string>
     <string name="time_today">Today</string>
@@ -163,4 +165,6 @@
     <string name="label_widget_today_task">Today\'s Task</string>
     <string name="label_slot_item_task">%d items</string>
     <string name="label_slot_date_with_relative">%1$s (%2$s)</string>
+    <string name="action_saving">Saving…</string>
+    <string name="error_task_save">Could not save the task. Please try again.</string>
 </resources>

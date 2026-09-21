@@ -101,7 +101,7 @@
     <string name="accessibility_progress_no_tasks">There are no tasks at the moment.</string>
     <string name="pref_category_category_management">Category Management</string>
     <string name="pref_category_data_management">Data Management</string>
-    <string name="pref_category_management_desc">Manage the category of tasks</string>
+    <string name="pref_category_management_desc">Сохраняйте избранные метки для подсказок. Изменение шаблона не меняет существующие задачи.</string>
     <string name="action_add_category">Add Category</string>
     <string name="tip_enter_category">Enter the category you want to add</string>
     <string name="tip_no_category_chip">There are currently no custom categories. You can add categories in the settings.</string>
@@ -161,4 +161,8 @@
     <string name="label_widget_today_task">Today\'s Task</string>
     <string name="label_slot_item_task">%d items</string>
     <string name="label_slot_date_with_relative">%1$s (%2$s)</string>
+    <string name="action_saving">Сохранение…</string>
+    <string name="error_task_save">Не удалось сохранить задачу. Попробуйте ещё раз.</string>
+    <string name="tag_input_hint">Выберите существующую метку или введите новую</string>
+    <string name="tag_optional">Метка (необязательно)</string>
 </resources>

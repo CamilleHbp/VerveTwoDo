@@ -10,6 +10,7 @@ import androidx.room3.Room
 import cn.super12138.todo.constants.Constants
 import cn.super12138.todo.logic.SettingsRepository
 import cn.super12138.todo.logic.TaskRepository
+import cn.super12138.todo.logic.TagRepository
 import cn.super12138.todo.logic.database.TaskDao
 import cn.super12138.todo.logic.database.TaskDatabase
 import cn.super12138.todo.logic.datastore.DataStoreManager
@@ -70,6 +71,7 @@ object VerveDoDI {
         single<TaskDao> { get<TaskDatabase>().taskDao() }
         singleOf(::TaskRepository)
         singleOf(::SettingsRepository)
+        singleOf(::TagRepository)
     }
 
     val datastoreModule = module {
@@ -86,6 +88,7 @@ object VerveDoDI {
                 initialTask = params.getOrNull(),
                 taskRepository = get(),
                 settingsRepository = get(),
+                tagRepository = get(),
                 confettiController = get()
             )
         }

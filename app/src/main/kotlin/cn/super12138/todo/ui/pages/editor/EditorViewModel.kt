@@ -4,28 +4,32 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.super12138.todo.logic.SettingsRepository
 import cn.super12138.todo.logic.TaskRepository
+import cn.super12138.todo.logic.TagRepository
+import cn.super12138.todo.logic.resolveTag
 import cn.super12138.todo.logic.database.TaskEntity
 import cn.super12138.todo.logic.model.Priority
-import cn.super12138.todo.ui.components.ChipItem
 import cn.super12138.todo.utils.ConfettiController
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CancellationException
 
 class EditorViewModel(
     val initialTask: TaskEntity?,
     private val taskRepository: TaskRepository,
     private val settingsRepository: SettingsRepository,
+    private val tagRepository: TagRepository,
     private val confettiController: ConfettiController
 ) : ViewModel() {
     private val localUiState = MutableStateFlow(TaskEditorUiState())
     val uiState: StateFlow<TaskEditorUiState> = combine(
         settingsRepository.textFieldAutoFocusFlow,
-        settingsRepository.categoriesFlow,
+        tagRepository.tags,
         localUiState
     ) { textFieldAutoFocus, categories, localState ->
         localState.copy(
@@ -80,24 +84,13 @@ class EditorViewModel(
     fun showExitConfirmDialog() = localUiState.update { it.copy(showExitConfirmDialog = true) }
     fun hideDeleteConfirmDialog() = localUiState.update { it.copy(showDeleteConfirmDialog = false) }
     fun hideExitConfirmDialog() = localUiState.update { it.copy(showExitConfirmDialog = false) }
-    fun setInitialCategory(chipItem: ChipItem?) {
-        setSelectedCategory(chipItem)
-        initialCategory = chipItem?.label ?: ""
-    }
-
-    fun setSelectedCategory(chipItem: ChipItem?) {
-        if (chipItem == null) return
-        localUiState.update {
-            it.copy(
-                selectedCategoryId = chipItem.id,
-                category = if (chipItem.id == -1) it.category else chipItem.label
-            )
-        }
-    }
-
     fun saveNewTask() {
-        if (!isModified()) return
-        val task = with(uiState.value) {
+        if (localUiState.value.isSaving || localUiState.value.isSaved) return
+        if (!isModified()) {
+            localUiState.update { it.copy(isSaved = true) }
+            return
+        }
+        val task = with(localUiState.value) {
             TaskEntity(
                 content = content,
                 category = category,
@@ -107,7 +100,18 @@ class EditorViewModel(
                 id = initialTask?.id ?: 0
             )
         }
-        viewModelScope.launch { taskRepository.insertTask(task) }
+        localUiState.update { it.copy(isSaving = true, saveFailed = false) }
+        viewModelScope.launch {
+            try {
+                val category = resolveTag(task.category, tagRepository.tags.first())
+                taskRepository.insertTask(task.copy(category = category))
+                localUiState.update { it.copy(isSaving = false, isSaved = true) }
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (_: Exception) {
+                localUiState.update { it.copy(isSaving = false, saveFailed = true) }
+            }
+        }
     }
 
     fun deleteTask() {

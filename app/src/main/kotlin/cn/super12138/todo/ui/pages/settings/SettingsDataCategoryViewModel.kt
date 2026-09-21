@@ -2,25 +2,29 @@ package cn.super12138.todo.ui.pages.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cn.super12138.todo.logic.TagRepository
+import cn.super12138.todo.logic.resolveTag
 import cn.super12138.todo.logic.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SettingsDataCategoryViewModel(private val settingsRepository: SettingsRepository) :
-    ViewModel() {
-    val localUiState = MutableStateFlow(SettingsDataCategoryUiState())
+class SettingsDataCategoryViewModel(
+    private val settingsRepository: SettingsRepository,
+    private val tagRepository: TagRepository
+) : ViewModel() {
+    private val localUiState = MutableStateFlow(SettingsDataCategoryUiState())
     val uiState: StateFlow<SettingsDataCategoryUiState> = combine(
         settingsRepository.categoriesFlow,
+        tagRepository.tags,
         localUiState
-    ) { categories, localUiState ->
-        localUiState.copy(
-            categories = categories
-        )
+    ) { categories, tags, localState ->
+        localState.copy(categories = categories, suggestedTags = tags)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -28,37 +32,26 @@ class SettingsDataCategoryViewModel(private val settingsRepository: SettingsRepo
     )
 
     fun setEditingCategory(value: String) = localUiState.update { it.copy(editingCategory = value) }
+
     fun addCategory(new: String) {
-        val old = uiState.value.editingCategory
-        val oldList = uiState.value.categories
-
-        val list = if (old.isEmpty()) {
-            if (oldList.contains(new)) {
-                // 调换分类位置
-                oldList - new + new
-            } else {
-                oldList + new
-            }
-        } else {
-            if (old == new) {
-                oldList
-            } else {
-                if (oldList.contains(new)) {
-                    oldList - old
-                } else {
-                    oldList - old + new
-                }
-            }
-        }
-
+        if (new.isBlank()) return
+        val old = localUiState.value.editingCategory
         viewModelScope.launch {
+            val presets = settingsRepository.categoriesFlow.first()
+            val category = resolveTag(new, tagRepository.tags.first())
+            val list = when {
+                old == category -> presets
+                category in presets -> presets.filterNot { it == old }
+                old in presets -> presets.map { if (it == old) category else it }
+                else -> presets + category
+            }
             settingsRepository.setCategories(list)
         }
     }
 
     fun removeCategory(category: String) {
         viewModelScope.launch {
-            settingsRepository.setCategories(uiState.value.categories - category)
+            settingsRepository.setCategories(settingsRepository.categoriesFlow.first() - category)
         }
     }
 

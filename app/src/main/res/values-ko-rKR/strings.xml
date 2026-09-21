@@ -101,7 +101,7 @@
     <string name="accessibility_progress_no_tasks">There are no tasks at the moment.</string>
     <string name="pref_category_category_management">Category Management</string>
     <string name="pref_category_data_management">Data Management</string>
-    <string name="pref_category_management_desc">Manage the category of tasks</string>
+    <string name="pref_category_management_desc">즐겨 쓰는 태그를 저장하여 추천받으세요. 저장된 태그를 수정해도 기존 작업은 변경되지 않습니다.</string>
     <string name="action_add_category">Add Category</string>
     <string name="tip_enter_category">Enter the category you want to add</string>
     <string name="tip_no_category_chip">There are currently no custom categories. You can add categories in the settings.</string>
@@ -161,4 +161,8 @@
     <string name="label_widget_today_task">Today\'s Task</string>
     <string name="label_slot_item_task">%d items</string>
     <string name="label_slot_date_with_relative">%1$s (%2$s)</string>
+    <string name="action_saving">저장 중…</string>
+    <string name="error_task_save">작업을 저장하지 못했습니다. 다시 시도해 주세요.</string>
+    <string name="tag_input_hint">기존 태그를 선택하거나 새 태그를 입력하세요</string>
+    <string name="tag_optional">태그 (선택 사항)</string>
 </resources>

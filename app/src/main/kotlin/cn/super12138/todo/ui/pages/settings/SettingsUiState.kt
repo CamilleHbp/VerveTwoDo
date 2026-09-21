@@ -30,6 +30,7 @@ data class SettingsDataUiState(
 
 data class SettingsDataCategoryUiState(
     val categories: List<String> = emptyList(),
+    val suggestedTags: List<String> = emptyList(),
     val editingCategory: String = "",
     val showAddDialog: Boolean = false
 )

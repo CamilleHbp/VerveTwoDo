@@ -11,6 +11,8 @@ class TaskRepository(private val taskDao: TaskDao) {
 
     fun getAllTasks(): Flow<List<TaskEntity>> = taskDao.getAll()
 
+    fun getCategories(): Flow<List<String>> = taskDao.getCategories()
+
     suspend fun updateTask(task: TaskEntity) {
         taskDao.update(task)
     }

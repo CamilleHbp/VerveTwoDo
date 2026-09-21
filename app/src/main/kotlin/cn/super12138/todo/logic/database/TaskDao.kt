@@ -17,6 +17,9 @@ interface TaskDao {
     @Query("SELECT * FROM ${Constants.DB_TABLE_NAME}")
     fun getAll(): Flow<List<TaskEntity>>
 
+    @Query("SELECT DISTINCT category FROM ${Constants.DB_TABLE_NAME} WHERE TRIM(category) != ''")
+    fun getCategories(): Flow<List<String>>
+
     @Update
     suspend fun update(task: TaskEntity)
 

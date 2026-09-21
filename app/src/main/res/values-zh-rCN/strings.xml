@@ -101,7 +101,7 @@
     <string name="accessibility_progress_no_tasks">当前没有任务</string>
     <string name="pref_category_category_management">分类管理</string>
     <string name="pref_category_data_management">数据管理</string>
-    <string name="pref_category_management_desc">管理任务的分类标签</string>
+    <string name="pref_category_management_desc">保存常用标签以供选择。编辑预设不会更改现有任务。</string>
     <string name="action_add_category">添加分类</string>
     <string name="tip_enter_category">输入分类名称</string>
     <string name="tip_no_category_chip">当前暂无自定义分类，你可以在设置中添加分类</string>
@@ -161,4 +161,8 @@
     <string name="label_widget_today_task">今日任务</string>
     <string name="label_slot_item_task">%d 项</string>
     <string name="label_slot_date_with_relative">%1$s（%2$s）</string>
+    <string name="action_saving">正在保存…</string>
+    <string name="error_task_save">无法保存任务，请重试。</string>
+    <string name="tag_input_hint">选择已有标签或输入新标签</string>
+    <string name="tag_optional">标签（可选）</string>
 </resources>

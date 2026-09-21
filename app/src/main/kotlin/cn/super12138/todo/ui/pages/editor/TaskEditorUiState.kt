@@ -8,9 +8,11 @@ data class TaskEditorUiState(
     val priority: Priority = Priority.Default,
     val dueDateMillis: Long? = null,
     val isCompleted: Boolean = false,
-    val selectedCategoryId: Int = -1,
     val categoryList: List<String> = emptyList(),
     val shouldAutoFocusContent: Boolean = false,
     val showExitConfirmDialog: Boolean = false,
-    val showDeleteConfirmDialog: Boolean = false
+    val showDeleteConfirmDialog: Boolean = false,
+    val isSaving: Boolean = false,
+    val isSaved: Boolean = false,
+    val saveFailed: Boolean = false
 )
