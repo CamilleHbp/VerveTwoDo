@@ -1,0 +1,15 @@
+# Local development environment
+- This host is Apple Silicon macOS. User prefers package-manager-owned, easily removable tools.
+- Android command-line tools are managed by Homebrew cask android-commandlinetools. SDK root: ~/Library/Android/sdk. Its cmdline-tools/latest is a symlink into /opt/homebrew/share/android-commandlinetools/.
+- Existing Homebrew android-platform-tools (adb) and system Zulu Java 25 predate this setup; preserve them when removing project tooling.
+- A Gradle-provisioned Temurin JDK 21 is available below ~/.gradle/jdks/eclipse_adoptium-21-aarch64-os_x.2/jdk-21.0.10+7/Contents/Home. The app's daemon/toolchain/bytecode target is 21; avoid installing a global Kotlin compiler.
+- local.properties stores this machine's sdk.dir and is ignored. No shell startup files are needed: script/android-dev.sh supplies SDK paths and finds JDK 21.
+- Script run starts the selected AVD, builds, installs the APK and launches MainActivity. build/test/start/stop/devices/sdk/avd commands support the corresponding operations. Default AVD name VerveDo_API_37, port 5554; override with VERVEDO_AVD / VERVEDO_EMULATOR_PORT.
+- SDK API 37's package name is platforms;android-37.0 (include the minor .0). ARM system-image package: system-images;android-37.0;google_apis;arm64-v8a. Use ARM images on this host.
+- Homebrew avdmanager derives its SDK root from its canonical tools path rather than ANDROID_HOME. The helper's avd subcommand sets com.android.sdkmanager.toolsdir to an SDK-local anchor so system images are found through the Homebrew symlink. Use the helper for AVD creation/removal.
+- Build Tools 36.0.0 is the effective project requirement; an extra 37.0.0 package is unnecessary. Emulator launching uses Python subprocess with start_new_session so it survives an agent command or terminal ending.
+- Development/removal instructions are docs/android-development.md. Stop/delete only the named AVD, uninstall specific SDK packages, then uninstall the newly added Homebrew packages. Keep shared Java/adb/Gradle and other AVDs. Avoid Homebrew --zap for shared Android settings.
+- Serena project config indexes Kotlin and TypeScript and directs agents to `mem:core`. Memory source files are under .serena/memories; validate with serena memories check.
+- Kotlin LSP uses the shared machine configuration in ~/.serena/serena_config.yml: ~/.local/bin/serena-kotlin connects to one on-demand Homebrew Kotlin server JVM for all projects, capped at a 2 GiB heap and stopped after five idle minutes. Do not restore project-local JVM launchers.
+- Shared indexes/cache slots live in ~/Library/Caches/Serena/kotlin-shared. Concurrent sessions of one project lease separate reusable slots to avoid index locking.
+- Use serena-kotlin --status to inspect clients and the shared process; serena-kotlin --stop refuses to interrupt connected clients. Reconnect existing Serena sessions after global settings change. Shared runtime is Homebrew JetBrains/utils/kotlin-lsp; preserve it when removing only this project.

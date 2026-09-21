@@ -1,0 +1,13 @@
+# Completion checks
+- Choose checks for the changed area; no additional repo AGENTS.md or custom mandatory lint/format task is present. These are practical validation commands, not a claim that CI already runs them.
+- Android compile/resources: ./gradlew :app:assembleDebug
+- JVM tests: ./gradlew :app:testDebugUnitTest
+- Android static checks: ./gradlew :app:lintDebug
+- Reasonable combined check for substantive Android code changes: ./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug
+- Device/instrumentation changes, with an emulator/device connected: ./gradlew :app:connectedDebugAndroidTest
+- Release/build-tool changes: ./gradlew :app:assembleRelease (the Android CI build command).
+- Script changes: pnpm --dir script install --frozen-lockfile then pnpm --dir script run build. No script test or lint command is declared.
+- Test roots are app/src/test/kotlin and app/src/androidTest/kotlin. Starter tests cover arithmetic/package identity; upcoming-widget date filtering also has JVM tests. Inspect the current suite before claiming behavior coverage.
+- Exercise affected user flows on device: task add/edit/complete/delete/search; category presets; dates/sorting; navigation/back; relevant themes and widgets. Storage changes also need upgrade/restore checks and Room schema review; preserve migrations.
+- Memory/config-only changes do not require app tests. Validate the memory graph with serena memories check from the repository root; inspect its report because the CLI always exits 0.
+- Check git diff --check and inspect changes for unintended/generated files. Report commands actually run and remaining limitations accurately.

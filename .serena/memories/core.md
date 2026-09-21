@@ -1,0 +1,13 @@
+# Project map
+- Workspace/repository, Gradle root, and shipped app name: VerveTwoDo. Android application ID is `studio.camille.vervetwodo`, allowing installation alongside upstream VerveDo. Source namespace stays `cn.super12138.todo`; database and preferences filenames remain upstream-compatible for ZIP restore. The user's default application ID prefix is `studio.camille`.
+- Native Android to-do app: Material 3 Expressive, tasks/categories/priorities/due dates, local backups, appearance settings, home-screen widgets. GPL-3.0-only; upstream identity and credits remain in README_EN.md, README.md, LICENSE and app/licences/.
+- One Android Gradle module, app/. script/ contains a separate Node/TypeScript versioning helper and android-dev.sh for local Android development; it is not another Gradle module or a web frontend. No server/API module.
+- Kotlin source root: app/src/main/kotlin/cn/super12138/todo/. Resources: app/src/main/res/. Exported Room schema history: app/schemas/. Store metadata/artwork: fastlane/ and art/.
+- For application startup, dependency injection and feature boundaries read `mem:app/core`; that note links persistence and UI details.
+- For the separate version-code script and its working-directory trap read `mem:script/core`.
+- For dependency/toolchain source-of-truth files and critical version constraints read `mem:tech_stack`.
+- For build/install/test commands and release-signing behavior read `mem:suggested_commands`.
+- For coding, localization and user communication requirements read `mem:conventions`.
+- For validation appropriate to a code change and test-coverage limits read `mem:task_completion`.
+- For this Mac's SDK, emulator and Serena runtime setup read `mem:local_environment`.
+- Memory additions should preserve the progressive reference graph and stable-fact threshold in `mem:memory_maintenance`. Recheck source before relying on implementation details that may have changed.

@@ -1,0 +1,12 @@
+# Storage and domain contracts
+Paths relative to app/src/main/kotlin/cn/super12138/todo/.
+- Constants.DB_NAME and DB_TABLE_NAME are both todo. TaskEntity has content, category, isCompleted, priority: Float, dueDateMillis: Long? and auto-generated id (0 for a new row); it is also kotlinx @Serializable for navigation.
+- Priority persisted values are -2f, -1f, 0f, 1f, 2f; use Priority.fromFloat, not enum ordinals. Display resources/colors are mapped separately.
+- TaskDatabase is schema version 5. Migration chain: 2->3 adds custom_subject; 3->4 replaces old subject fields with category; 4->5 adds nullable due_date. Migrations are registered in VerveDoDI. Export schemas under app/schemas/cn.super12138.todo.logic.database.TaskDatabase/. A destructive fallback is configured; do not treat it as a substitute for preserving user data.
+- DAO insert uses REPLACE. EditorViewModel.saveNewTask builds a TaskEntity using initialTask.id for edits or 0 for creation, then inserts; retaining the ID is critical.
+- Preferences DataStore name is cn.super12138.todo_preferences. DI migrates the same-named legacy SharedPreferences. Constants defines keys/defaults; SettingsRepository translates stored IDs to enums.
+- Category presets are a JSON-encoded ordered List<String> preference. Tasks independently store a category string. Editing/removing a preset in SettingsDataCategoryViewModel does not automatically rename existing tasks.
+- SettingsDataViewModel ZIP backup contains database plus existing -wal/-shm files and DataStore .preferences_pb. Restore writes files back to their storage directories and the UI prompts for app restart. Treat filenames and serialized formats as compatibility contracts.
+- CSV export is UTF-8, quotes every cell, and uses columns content,category,isCompleted,priority,dueDateMillis,id; null date becomes empty. It is export-only in the existing UI.
+- Date behavior needs special care: SystemUtils.getStartOfDayMillis actually returns 08:00 in the system zone; SystemUtils.today is initialized once. Overview and today's widget compare dueDateMillis for exact equality with this value; the editor also accepts Material date-picker milliseconds. Review timezone/midnight/DST behavior across all consumers rather than assuming timestamps are normalized.
+- Shared List<TaskEntity>.sort in utils/VerveDoExt.kt places incomplete tasks first for every sorting mode; due-date ties use nullsLast where applicable.
