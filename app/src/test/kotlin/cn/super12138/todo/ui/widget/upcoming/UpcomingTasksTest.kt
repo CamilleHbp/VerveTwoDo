@@ -235,7 +235,7 @@ class UpcomingTasksTest {
         val result = groups(tasks)
         assertEquals(listOf(UpcomingTaskSection.Overdue, UpcomingTaskSection.Today, UpcomingTaskSection.Tomorrow,
             UpcomingTaskSection.ThisWeek, UpcomingTaskSection.NextWeek, UpcomingTaskSection.Later), result.map { it.section })
-        assertEquals(listOf(listOf(1), listOf(2), listOf(3), listOf(4, 5), listOf(6, 7), listOf(8, 9)),
+        assertEquals(listOf(listOf(1), listOf(2), listOf(3), listOf(4, 5), listOf(6), listOf(7, 8, 9)),
             result.map { group -> group.tasks.map { it.id } })
         assertEquals(listOf(1, 9, 8, 7, 6, 5, 4, 3, 2), ids(tasks, UpcomingTaskSort.DueDateLatest))
     }
@@ -247,6 +247,15 @@ class UpcomingTasksTest {
         assertEquals(listOf(UpcomingTaskSection.Tomorrow, UpcomingTaskSection.NextWeek, UpcomingTaskSection.Later),
             result.map { it.section })
         assertEquals(listOf(2, 3), result[1].tasks.map { it.id })
+    }
+
+    @Test fun laterStartsAfterSevenDaysRegardlessOfWeekday() {
+        (0L..6L).forEach { offset ->
+            val date = today.plusDays(offset)
+            val result = upcomingTaskGroups(listOf(task(1, day = date.plusDays(7)),
+                task(2, day = date.plusDays(8))), UpcomingTaskSort.DueDate, today = date, zone = zone)
+            assertEquals(listOf(UpcomingTaskSection.NextWeek, UpcomingTaskSection.Later), result.map { it.section })
+        }
     }
 
     @Test fun collapsedSectionsAreIndependentPerWidgetAndSurviveFiltering() {

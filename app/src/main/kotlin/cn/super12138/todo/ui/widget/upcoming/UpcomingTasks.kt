@@ -53,7 +53,7 @@ private fun dateSection(date: LocalDate, today: LocalDate): UpcomingTaskSection 
         date == today -> UpcomingTaskSection.Today
         date == today.plusDays(1) -> UpcomingTaskSection.Tomorrow
         date < nextMonday -> UpcomingTaskSection.ThisWeek
-        date < nextMonday.plusWeeks(1) -> UpcomingTaskSection.NextWeek
+        date <= today.plusDays(7) -> UpcomingTaskSection.NextWeek
         else -> UpcomingTaskSection.Later
     }
 }
