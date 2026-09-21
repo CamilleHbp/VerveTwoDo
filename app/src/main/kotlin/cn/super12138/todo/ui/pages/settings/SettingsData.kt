@@ -116,7 +116,7 @@ fun SettingsData(
                     title = stringResource(R.string.pref_backup),
                     description = stringResource(R.string.pref_backup_desc),
                     onClick = {
-                        backupLauncher.launch("VerveDo-backup-${SystemUtils.getTime()}.zip")
+                        backupLauncher.launch("VerveTwoDo-backup-${SystemUtils.getTime()}.zip")
                     }
                 )
             }
@@ -136,7 +136,7 @@ fun SettingsData(
                     title = stringResource(R.string.pref_export_task),
                     description = stringResource(R.string.pref_export_task_desc),
                     onClick = {
-                        exportCsvLauncher.launch("VerveDo-backup-${SystemUtils.getTime()}.csv")
+                        exportCsvLauncher.launch("VerveTwoDo-backup-${SystemUtils.getTime()}.csv")
                     }
                 )
             }
@@ -168,8 +168,8 @@ fun SettingsData(
         options = BackupFormat.entries,
         onSelect = {
             when (it) {
-                BackupFormat.Zip -> backupZipLauncher.launch("VerveDo-backup-${SystemUtils.getTime()}.zip")
-                BackupFormat.Csv -> backupCsvLauncher.launch("VerveDo-backup-${SystemUtils.getTime()}.csv")
+                BackupFormat.Zip -> backupZipLauncher.launch("VerveTwoDo-backup-${SystemUtils.getTime()}.zip")
+                BackupFormat.Csv -> backupCsvLauncher.launch("VerveTwoDo-backup-${SystemUtils.getTime()}.csv")
             }
         },
         onDismiss = viewModel::hideBackupFormatDialog

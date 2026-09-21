@@ -25,5 +25,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "VerveDo"
+rootProject.name = "VerveTwoDo"
 include(":app")

@@ -92,7 +92,7 @@ fun SettingsAbout(
                 SettingsItem(
                     leadingIconRes = R.drawable.ic_translate,
                     title = stringResource(R.string.pref_assist_in_translation),
-                    description = stringResource(R.string.pref_assist_in_translation_desc),
+                    description = stringResource(R.string.pref_upstream_translation_desc),
                     onClick = { uriHandler.openUri(Constants.CROWDIN_PROJECT) }
                 )
             }
@@ -110,6 +110,14 @@ fun SettingsAbout(
                     title = stringResource(R.string.pref_developer_options),
                     description = stringResource(R.string.pref_developer_options_desc),
                     onClick = toDevPage
+                )
+            }
+            item(key = "upstream") {
+                SettingsItem(
+                    leadingIcon = GitHubIcon,
+                    title = stringResource(R.string.pref_upstream_project),
+                    description = stringResource(R.string.pref_upstream_project_desc),
+                    onClick = { uriHandler.openUri(Constants.UPSTREAM_REPO) }
                 )
             }
         }

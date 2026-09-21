@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="pref_upstream_project">Upstream project</string>
+    <string name="pref_upstream_project_desc">Based on VerveDo by Super12138 and contributors</string>
+    <string name="pref_upstream_translation_desc">Help translate upstream VerveDo on Crowdin</string>
     <string name="page_settings">设置</string>
     <string name="action_add_task">添加任务</string>
     <string name="tip_no_task">目前没有要完成的任务，好好休息一下吧~</string>
@@ -83,9 +86,9 @@
     <string name="pref_data">数据</string>
     <string name="pref_data_desc">备份与恢复、管理数据</string>
     <string name="pref_backup">备份数据</string>
-    <string name="pref_backup_desc">将 VerveDo 的应用数据保存在你的设备上</string>
+    <string name="pref_backup_desc">将 VerveTwoDo 的应用数据保存在你的设备上</string>
     <string name="pref_restore">恢复数据</string>
-    <string name="pref_restore_desc">从你的设备上恢复 VerveDo 的应用数据，仅支持 .zip 文件</string>
+    <string name="pref_restore_desc">从你的设备上恢复 VerveTwoDo 的应用数据，仅支持 .zip 文件</string>
     <string name="tip_backup_success">备份成功</string>
     <string name="tip_backup_failed">备份失败</string>
     <string name="tip_restore_success">数据恢复成功，需要重启应用以加载数据</string>
@@ -146,7 +149,7 @@
     <string name="time_next_week">下周</string>
     <string name="label_basic_information">基本信息</string>
     <string name="pref_assist_in_translation">协助翻译</string>
-    <string name="pref_assist_in_translation_desc">帮助我们把 VerveDo 翻译到你使用的语言</string>
+    <string name="pref_assist_in_translation_desc">帮助我们把 VerveTwoDo 翻译到你使用的语言</string>
     <string name="pref_preview_color_system">预览新的颜色系统</string>
     <string name="pref_preview_color_system_desc">使用支持 Material 3 Expressive 的颜色标准 Spec2025（实验性）</string>
     <string name="pref_export_task">导出任务到文件</string>

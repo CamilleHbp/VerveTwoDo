@@ -1,14 +1,16 @@
 package cn.super12138.todo.constants
 
 object Constants {
-    const val TAG = "VerveDo"
-    const val DEVELOPER_GITHUB = "https://github.com/Super12138/"
-    const val GITHUB_REPO = "https://github.com/Super12138/VerveDo/"
+    const val TAG = "VerveTwoDo"
+    const val DEVELOPER_GITHUB = "https://github.com/CamilleHbp/"
+    const val GITHUB_REPO = "https://github.com/CamilleHbp/VerveTwoDo/"
+    const val UPSTREAM_REPO = "https://github.com/Super12138/VerveDo/"
     const val CROWDIN_PROJECT = "https://crowdin.com/project/vervedo/"
 
     const val KEY_TODO_FAB_TRANSITION = "todo_fab"
     const val KEY_TODO_ITEM_TRANSITION = "todo_item_id"
 
+    // Keep upstream storage names so VerveDo ZIP backups remain compatible.
     const val DB_NAME = "todo"
     const val DB_TABLE_NAME = "todo"
 

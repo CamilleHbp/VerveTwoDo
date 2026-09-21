@@ -1,15 +1,16 @@
-![应用界面一览](https://s2.loli.net/2026/02/09/EJS1HLOAvKyaRsl.png)
+![Upstream VerveDo UI](https://s2.loli.net/2026/02/09/EJS1HLOAvKyaRsl.png)
 
-# VerveDo
+# VerveTwoDo
+
+VerveTwoDo is a fork of [VerveDo](https://github.com/Super12138/VerveDo) by Super12138 and contributors, licensed under GPL-3.0-only. It installs alongside upstream VerveDo as a separate app.
 
 一个简单的、遵循 Material 3 Expressive 的待办应用，使用 Jetpack Compose 编写
 
-**简体中文** | [English](https://github.com/Super12138/VerveDo/blob/main/README_EN.md)
+**简体中文** | [English](https://github.com/CamilleHbp/VerveTwoDo/blob/main/README_EN.md)
 
-[![Android CI](https://github.com/Super12138/VerveDo/actions/workflows/android_ci.yml/badge.svg)](https://github.com/Super12138/VerveDo/actions/workflows/android_ci.yml)
-[![Crowdin](https://badges.crowdin.net/vervedo/localized.svg)](https://crowdin.com/project/vervedo)
-![GitHub Release 最新版本](https://img.shields.io/github/v/release/Super12138/VerveDo?style=flat-square)
-![GitHub Release 总下载数](https://img.shields.io/github/downloads/Super12138/VerveDo/total?style=flat-square)
+[![Android CI](https://github.com/CamilleHbp/VerveTwoDo/actions/workflows/android_ci.yml/badge.svg)](https://github.com/CamilleHbp/VerveTwoDo/actions/workflows/android_ci.yml)
+![GitHub Release 最新版本](https://img.shields.io/github/v/release/CamilleHbp/VerveTwoDo?style=flat-square)
+![GitHub Release 总下载数](https://img.shields.io/github/downloads/CamilleHbp/VerveTwoDo/total?style=flat-square)
 
 ## 📦 版本支持
 
@@ -17,7 +18,7 @@
 
 ## 📃 许可证
 
-[GPL-3.0-only](https://github.com/Super12138/VerveDo/blob/main/LICENSE)
+[GPL-3.0-only](https://github.com/CamilleHbp/VerveTwoDo/blob/main/LICENSE)
 
 ## ✨ 功能
 
@@ -29,18 +30,21 @@
 - [x] 时间划分功能
 - ...
 
-## ⬇️ 下载
+## ⬇️ Download
 
-> [!IMPORTANT]
-> 下方两个渠道是官方认定的安全渠道，请从这两个渠道下载待办以保证个人隐私不被侵犯。
->
-> 待办不会自动更新，建议[订阅 GitHub Release 发行通知](https://docs.github.com/zh/account-and-profile/managing-subscriptions-and-notifications-on-github/setting-up-notifications/configuring-notifications#configuring-your-watch-settings-for-an-individual-repository)或者[安装 F-Droid](https://f-droid.org/) 检查更新
+Check [VerveTwoDo releases](https://github.com/CamilleHbp/VerveTwoDo/releases) for published builds, or build a debug APK with `./gradlew :app:assembleDebug`. APKs are written to `app/build/outputs/apk/debug/` with the `vervetwodo-` prefix.
 
-[前往 GitHub Release](https://github.com/Super12138/VerveDo/releases/)或者[从 F-Droid 上下载](https://f-droid.org/packages/cn.super12138.todo)
+The [F-Droid listing for VerveDo](https://f-droid.org/packages/cn.super12138.todo) distributes the upstream app.
 
-[<img src="./art/get-it-on-fdroid-zh-cn.png" height="100" />](https://f-droid.org/packages/cn.super12138.todo)
+## Import from VerveDo
 
-## 📸 截图
+1. In VerveDo, open **Settings → Data Management → Backup** and save a ZIP file to Downloads.
+2. Install VerveTwoDo alongside VerveDo. There is no need to uninstall the upstream app.
+3. In VerveTwoDo, open **Settings → Data Management → Restore**, select that ZIP, and restart when prompted.
+
+ZIP backups include tasks and in-app preferences. CSV exports contain task data only. Restoring replaces VerveTwoDo's data; it does not merge tasks or change the upstream app. Home-screen widgets and Android permissions need to be configured separately.
+
+## 📸 Upstream VerveDo screenshots
 
 | ![概览界面（浅色）](https://s2.loli.net/2026/02/09/nhuMmF8L7Oqk4dp.png) | ![概览界面（深色）](https://s2.loli.net/2026/02/09/Oari6zwC14gLPNl.png) |
 | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- |
@@ -49,8 +53,10 @@
 | 待办列表                                                                | 添加待办                                                                |
 
 ## 🤝 贡献
-你可以为 VerveDo 贡献代码和翻译。
+你可以为 VerveTwoDo 贡献代码和翻译。
 贡献代码只需提交 Pull Request 即可，贡献翻译请[加入 Crowdin 项目](https://crowdin.com/project/vervedo)。若需提出新语言，请提交 Issue。
+
+Upstream VerveDo translations:
 
 <a href="https://crowdin.com/project/vervedo">
     <img style="width:140; height:40px" src="./art/localization-at-white-rounded-bordered@1x.png" srcset="./art/localization-at-white-rounded-bordered@1x.png 1x,./art/localization-at-white-rounded-bordered@2x.png 2x" alt="VerveDo Crowdin 项目" />

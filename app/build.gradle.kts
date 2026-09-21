@@ -18,6 +18,7 @@ room3 {
 val verCode = "git rev-list --count HEAD".exec().toInt() */
 
 android {
+    // Source packages stay stable; applicationId gives this fork its own install/data sandbox.
     namespace = "cn.super12138.todo"
     compileSdk {
         version = release(37)
@@ -36,7 +37,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "cn.super12138.todo"
+        applicationId = "studio.camille.vervetwodo"
         minSdk = 26
         targetSdk = 37
         versionCode = 1271
@@ -44,7 +45,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        base.archivesName.set("vervedo-${versionName}")
+        base.archivesName.set("vervetwodo-${versionName}")
     }
 
     buildTypes {

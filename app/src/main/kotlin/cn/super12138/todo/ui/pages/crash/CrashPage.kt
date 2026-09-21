@@ -23,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -84,8 +83,8 @@ fun CrashPage(
         },
         contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { innerPadding ->
-        val context = LocalContext.current
-        val packageName = context.packageName
+        // Stack traces use the source namespace, which differs from the fork application ID.
+        val packageName = R::class.java.name.substringBeforeLast('.')
         val local = LocalLocale.current
 
         val deviceBrand = Build.BRAND
