@@ -24,7 +24,7 @@ fun UpcomingTaskSort.field(): UpcomingSortField = when (this) {
 fun UpcomingTaskSort.withField(field: UpcomingSortField): UpcomingTaskSort =
     if (field == this.field()) this else when (field) {
         UpcomingSortField.DueDate -> UpcomingTaskSort.DueDate
-        UpcomingSortField.CreationDate -> UpcomingTaskSort.CreatedNewest
+        UpcomingSortField.CreationDate -> UpcomingTaskSort.CreatedOldest
         UpcomingSortField.Priority -> UpcomingTaskSort.Priority
         UpcomingSortField.Alphabetical -> UpcomingTaskSort.Alphabetical
     }
@@ -74,20 +74,21 @@ fun upcomingTaskGroups(
                 (it.taskTags.isEmpty() && "" in categories))
     }
     val byDate = compareBy<TaskEntity> { it.dueDateMillis }
-        .thenByDescending { it.priority }.thenBy { it.id }
-    // Legacy tasks have no timestamp. Keep their insertion order before timestamped tasks.
+    val byPriority = compareByDescending<TaskEntity> { it.priority }
+    // Legacy tasks have no timestamp. Use their IDs as insertion order before timestamped tasks.
     val byCreation = compareBy<TaskEntity> { it.createdAtMillis != null }
-        .thenBy { it.createdAtMillis }.thenBy { it.id }
+        .thenBy { it.createdAtMillis ?: it.id.toLong() }
+    val defaultOrder = byDate.then(byPriority).then(byCreation)
+    // Promote the selected field; keep the remaining criteria in their default order.
     val comparator = when (sort) {
-        UpcomingTaskSort.DueDate -> byDate
-        UpcomingTaskSort.DueDateLatest -> compareByDescending<TaskEntity> { it.dueDateMillis }
-            .thenByDescending { it.priority }.thenBy { it.id }
-        UpcomingTaskSort.CreatedNewest -> byCreation.reversed()
-        UpcomingTaskSort.CreatedOldest -> byCreation
-        UpcomingTaskSort.Priority -> compareByDescending<TaskEntity> { it.priority }.then(byDate)
+        UpcomingTaskSort.DueDate -> defaultOrder
+        UpcomingTaskSort.DueDateLatest -> byDate.reversed().then(byPriority).then(byCreation)
+        UpcomingTaskSort.CreatedNewest -> byCreation.reversed().then(byDate).then(byPriority)
+        UpcomingTaskSort.CreatedOldest -> byCreation.then(byDate).then(byPriority)
+        UpcomingTaskSort.Priority -> byPriority.then(byDate).then(byCreation)
         UpcomingTaskSort.Alphabetical -> compareBy<TaskEntity, String>(String.CASE_INSENSITIVE_ORDER) { it.content }
-            .then(byDate)
-    }
+            .then(defaultOrder)
+    }.thenBy { it.id }
     val (overdue, upcoming) = dated.sortedWith(comparator).partition {
         requireNotNull(it.dueDateMillis) < start
     }

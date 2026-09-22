@@ -102,6 +102,43 @@ class UpcomingTasksTest {
         assertEquals(listOf(1, 3, 2), ids(tasks))
     }
 
+    @Test fun selectedFieldLeadsTheSortWithRemainingCriteriaBreakingTies() {
+        val hour = 60 * 60 * 1000L
+        val due = requireNotNull(task(1).dueDateMillis)
+        val tasks = listOf(
+            task(1, priority = 1f).copy(content = "Repeat", createdAtMillis = 200, dueDateMillis = due + 2 * hour),
+            task(2, priority = 2f).copy(content = "Repeat", createdAtMillis = 300),
+            task(3, priority = 2f).copy(content = "repeat", createdAtMillis = 100),
+            task(4, priority = 1f).copy(content = "Repeat", createdAtMillis = 100),
+            task(5, priority = 2f).copy(content = "Repeat", createdAtMillis = 100, dueDateMillis = due + hour),
+            task(6, priority = 2f).copy(content = "Repeat", createdAtMillis = 100, dueDateMillis = due + hour))
+        val expected = mapOf(
+            UpcomingTaskSort.DueDate to listOf(3, 2, 4, 5, 6, 1),
+            UpcomingTaskSort.DueDateLatest to listOf(1, 5, 6, 3, 2, 4),
+            UpcomingTaskSort.Priority to listOf(3, 2, 5, 6, 4, 1),
+            UpcomingTaskSort.CreatedOldest to listOf(3, 4, 5, 6, 1, 2),
+            UpcomingTaskSort.CreatedNewest to listOf(2, 1, 3, 4, 5, 6),
+            UpcomingTaskSort.Alphabetical to listOf(3, 2, 4, 5, 6, 1))
+
+        val defaultSort = UpcomingWidgetPreferences.sort(mutablePreferencesOf())
+        assertEquals(UpcomingTaskSort.DueDate, defaultSort)
+        assertEquals(expected[UpcomingTaskSort.DueDate], ids(tasks, defaultSort))
+        UpcomingTaskSort.entries.forEach { sort ->
+            assertEquals(sort.name, expected[sort], ids(tasks, sort))
+            assertEquals(sort.name, expected[sort], ids(tasks.reversed(), sort))
+            val overdue = tasks.map { it.copy(dueDateMillis = requireNotNull(it.dueDateMillis) - 24 * hour) }
+            assertEquals(sort.name, expected[sort], groups(overdue, sort).single().tasks.map { it.id })
+        }
+    }
+
+    @Test fun dateAndPriorityTiesUseLegacyInsertionOrderThenCreationTimestamps() {
+        val tasks = listOf(task(3).copy(createdAtMillis = 200), task(2),
+            task(4).copy(createdAtMillis = 100), task(1))
+        listOf(UpcomingTaskSort.DueDate, UpcomingTaskSort.DueDateLatest, UpcomingTaskSort.Priority).forEach { sort ->
+            assertEquals(sort.name, listOf(1, 2, 4, 3), ids(tasks, sort))
+        }
+    }
+
     @Test fun completedTasksStayAtTheBottomOfTheirDayInEitherDateDirection() {
         val tasks = listOf(task(1, priority = 2f).copy(isCompleted = true), task(2),
             task(3, priority = 1f).copy(isCompleted = true), task(4, priority = 2f),
@@ -283,7 +320,7 @@ class UpcomingTasksTest {
             assertEquals(sort, sort.withField(sort.field()))
             assertEquals(sort, sort.reverseDateOrder().reverseDateOrder())
         }
-        assertEquals(UpcomingTaskSort.CreatedNewest, UpcomingTaskSort.Priority.withField(UpcomingSortField.CreationDate))
+        assertEquals(UpcomingTaskSort.CreatedOldest, UpcomingTaskSort.Priority.withField(UpcomingSortField.CreationDate))
         assertEquals(UpcomingTaskSort.DueDate, UpcomingTaskSort.CreatedOldest.withField(UpcomingSortField.DueDate))
     }
 
