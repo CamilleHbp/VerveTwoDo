@@ -19,3 +19,9 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Glance instantiates action callbacks by class name with a public no-arg constructor.
+# Its consumer rule keeps the classes but does not preserve their constructors in R8 full mode.
+-keep class cn.super12138.todo.** implements androidx.glance.appwidget.action.ActionCallback {
+    public <init>();
+}
