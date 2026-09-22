@@ -234,4 +234,5 @@
     <string name="add_due_time">添加时间</string>
     <string name="remove_due_time">移除时间</string>
     <string name="pref_default_due_time">默认截止时间</string>
+    <string name="widget_reschedule">待重新安排</string>
 </resources>

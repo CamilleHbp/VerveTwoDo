@@ -236,4 +236,5 @@
     <string name="add_due_time">Uhrzeit hinzufügen</string>
     <string name="remove_due_time">Uhrzeit entfernen</string>
     <string name="pref_default_due_time">Standard-Fälligkeitszeit</string>
+    <string name="widget_reschedule">Neu zu planen</string>
 </resources>

@@ -240,4 +240,5 @@
     <string name="add_due_time">Добавить время</string>
     <string name="remove_due_time">Удалить время</string>
     <string name="pref_default_due_time">Время выполнения по умолчанию</string>
+    <string name="widget_reschedule">Перенести</string>
 </resources>

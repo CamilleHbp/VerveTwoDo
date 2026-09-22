@@ -211,7 +211,7 @@
     <string name="widget_restore_task">Mark %s as unfinished</string>
     <string name="widget_completed_task">Completed: %s</string>
     <string name="widget_undo">Undo</string>
-    <string name="widget_reschedule" translatable="false">À reprogrammer</string>
+    <string name="widget_reschedule">To reschedule</string>
     <string name="widget_this_week">This Week</string>
     <string name="widget_next_week">Next Week</string>
     <string name="widget_later">Later</string>

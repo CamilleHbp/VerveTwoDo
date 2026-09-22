@@ -244,4 +244,5 @@
     <string name="add_due_time">إضافة وقت</string>
     <string name="remove_due_time">إزالة الوقت</string>
     <string name="pref_default_due_time">وقت الاستحقاق الافتراضي</string>
+    <string name="widget_reschedule">لإعادة الجدولة</string>
 </resources>

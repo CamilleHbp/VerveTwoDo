@@ -234,4 +234,5 @@
     <string name="add_due_time">時刻を追加</string>
     <string name="remove_due_time">時刻を削除</string>
     <string name="pref_default_due_time">既定の期限時刻</string>
+    <string name="widget_reschedule">再スケジュール</string>
 </resources>
