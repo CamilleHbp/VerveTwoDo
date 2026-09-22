@@ -6,11 +6,22 @@ import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Update
+import androidx.room3.Transaction
 import cn.super12138.todo.constants.Constants
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
+    @Query("SELECT COUNT(*) FROM ${Constants.DB_TABLE_NAME}")
+    suspend fun count(): Int
+
+    @Transaction
+    suspend fun insertIfEmpty(tasks: List<TaskEntity>): Boolean {
+        if (count() != 0) return false
+        tasks.forEach { insert(it) }
+        return true
+    }
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(task: TaskEntity)
 

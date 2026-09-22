@@ -24,7 +24,7 @@ fi
 
 start_emulator() {
     local active_name state
-    active_name=$(adb -s "$serial" emu avd name 2>/dev/null | head -n 1 || true)
+    active_name=$(adb -s "$serial" emu avd name 2>/dev/null | tr -d '\r' | head -n 1 || true)
     if [[ -n "$active_name" && "$active_name" != "$avd_name" ]]; then
         printf 'Port %s belongs to %s. Set VERVEDO_EMULATOR_PORT to another even port.\n' "$emulator_port" "$active_name" >&2
         return 1
@@ -64,7 +64,20 @@ PY
 cd "$project_root"
 case "${1:-help}" in
     build)
-        exec bash ./gradlew :app:assembleDebug
+        bash ./gradlew :app:assembleDebug
+        python3 - "$project_root/app/build/outputs/apk/debug" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+output_dir = Path(sys.argv[1])
+metadata = json.loads((output_dir / "output-metadata.json").read_text())
+apks = [output_dir / element["outputFile"] for element in metadata["elements"]]
+if not apks or any(not apk.is_file() for apk in apks):
+    sys.exit("Build finished, but the debug APK output could not be found.")
+for apk in apks:
+    print(f"\nBuilt APK: {apk}")
+PY
         ;;
     test)
         exec bash ./gradlew :app:testDebugUnitTest :app:lintDebug
@@ -78,10 +91,18 @@ case "${1:-help}" in
         apk=$(find app/build/outputs/apk/debug -maxdepth 1 -name 'vervetwodo-*.apk' -print -quit)
         [[ -n "$apk" ]] || { printf 'Debug APK was not found.\n' >&2; exit 1; }
         adb -s "$serial" install -r "$apk"
+        seed_result=$(adb -s "$serial" shell am broadcast --include-stopped-packages \
+            -n studio.camille.vervetwodo/cn.super12138.todo.debug.SampleTasksReceiver)
+        printf '%s\n' "$seed_result"
+        if [[ "$seed_result" != *'Broadcast completed: result=0'* ]] ||
+            [[ "$seed_result" != *'Sample tasks added'* && "$seed_result" != *'Existing tasks preserved'* ]]; then
+            printf 'Sample task initialization failed.\n' >&2
+            exit 1
+        fi
         exec adb -s "$serial" shell am start -n studio.camille.vervetwodo/cn.super12138.todo.ui.activities.MainActivity
         ;;
     stop)
-        active_name=$(adb -s "$serial" emu avd name 2>/dev/null | head -n 1 || true)
+        active_name=$(adb -s "$serial" emu avd name 2>/dev/null | tr -d '\r' | head -n 1 || true)
         [[ "$active_name" == "$avd_name" ]] || { printf '%s is not running on %s.\n' "$avd_name" "$serial"; exit 0; }
         exec adb -s "$serial" emu kill
         ;;
@@ -101,6 +122,6 @@ case "${1:-help}" in
         ;;
     *)
         printf 'Usage: %s {build|test|start|run|stop|devices|sdk|avd}\n' "$0"
-        printf 'run starts the emulator, builds, installs, and opens VerveTwoDo.\n'
+        printf 'run starts the emulator, builds, installs, seeds tasks if empty, and opens VerveTwoDo.\n'
         ;;
 esac

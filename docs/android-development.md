@@ -2,6 +2,8 @@
 
 From the repository root:
 
+The `run` command adds 14 sample tasks only when there are no tasks in the app. Existing tasks (including completed tasks) are left unchanged. Sample due dates are relative to the emulator's current date. Seeding is available only in debug builds.
+
 ```sh
 ./script/android-dev.sh run       # Start the emulator, build, install and open VerveTwoDo
 ./script/android-dev.sh build     # Build a debug APK
