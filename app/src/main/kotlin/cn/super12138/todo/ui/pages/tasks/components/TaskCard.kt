@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -25,7 +27,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.ButtonShapes
@@ -55,6 +56,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import cn.super12138.todo.R
 import cn.super12138.todo.logic.model.Priority
 import cn.super12138.todo.ui.VerveDoDefaults
+import cn.super12138.todo.ui.components.PriorityIcon
 import cn.super12138.todo.ui.theme.shapeByInteraction
 import cn.super12138.todo.utils.VibrationUtils
 import cn.super12138.todo.utils.containerColor
@@ -71,6 +73,7 @@ fun TaskCard(
     dueDateMillis: Long?,
     priority: Priority,
     selected: Boolean,
+    selectionMode: Boolean = false,
     modifier: Modifier = Modifier,
     details: String = "",
     dueTimeMinutes: Int? = null,
@@ -142,7 +145,14 @@ fun TaskCard(
             //.heightIn(min = VerveDoDefaults.Sizes.taskCardHeight)
             //.wrapContentHeight()
             .clip(animatedShape)
-            .combinedClickable(
+            .then(if (selectionMode) Modifier.toggleable(
+                value = selected,
+                role = Role.Checkbox,
+                onValueChange = {
+                    VibrationUtils.performHapticFeedback(view)
+                    onClick()
+                }
+            ) else Modifier.combinedClickable(
                 interactionSource = interactionSource,
                 onClick = {
                     VibrationUtils.performHapticFeedback(view)
@@ -150,12 +160,17 @@ fun TaskCard(
                 },
                 // 不再需要使用：VibrationUtils.performHapticFeedback(view, HapticFeedbackConstants.LONG_PRESS)
                 // 因为 combinedClickable 在更新的 Compose 里已经处理好了触感反馈
-                onLongClick = onLongClick
-            )
+                onLongClick = onLongClick,
+                onLongClickLabel = stringResource(R.string.task_edit)
+            ))
             .drawBehind { drawRect(containerColor) }
     ) {
+        if (selectionMode) {
+            androidx.compose.material3.Checkbox(checked = selected, onCheckedChange = null,
+                modifier = Modifier.padding(start = 8.dp))
+        }
         AnimatedVisibility(
-            visible = selected,
+            visible = selected && !selectionMode,
             enter = enterTransition,
             exit = exitTransition
         ) { SelectedIcon(Modifier.padding(start = VerveDoDefaults.contentPadding * 2)) }
@@ -214,29 +229,18 @@ fun TaskCard(
                     ) {
                         val colors = cn.super12138.todo.logic.assignTagColors(tags, tagColors)
                         tags.forEach { tag ->
-                            Row(verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                Box(Modifier.size(8.dp).background(Color(colors.getValue(tag)), CircleShape))
-                                Text(tag, style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
+                            cn.super12138.todo.ui.components.EditableTag(tag, colors.getValue(tag),
+                                enabled = !selectionMode)
                         }
                     }
 
-                    Text(
-                        text = stringResource(priority.nameRes),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = priorityColor,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.wrapContentWidth()
-                    )
+                    PriorityIcon(priority = priority, tint = priorityColor)
                 }
             }
         }
 
         AnimatedVisibility(
-            visible = !selected && !completed,
+            visible = !selectionMode && !selected && !completed,
             enter = enterTransition,
             exit = exitTransition
         ) {

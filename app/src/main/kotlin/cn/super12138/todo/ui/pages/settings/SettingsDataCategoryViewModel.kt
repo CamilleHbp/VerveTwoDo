@@ -3,61 +3,58 @@ package cn.super12138.todo.ui.pages.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.super12138.todo.logic.TagRepository
-import cn.super12138.todo.logic.resolveTag
-import cn.super12138.todo.logic.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SettingsDataCategoryViewModel(
-    private val settingsRepository: SettingsRepository,
-    private val tagRepository: TagRepository
+    private val tagRepository: TagRepository,
+    application: android.app.Application,
+    private val refreshWidgets: suspend (String?, String?) -> Unit = { old, replacement ->
+        cn.super12138.todo.utils.updateTagWidgets(application, old, replacement)
+    }
 ) : ViewModel() {
     private val localUiState = MutableStateFlow(SettingsDataCategoryUiState())
     val uiState: StateFlow<SettingsDataCategoryUiState> = combine(
-        settingsRepository.categoriesFlow,
-        tagRepository.tags,
-        tagRepository.colors,
-        localUiState
-    ) { categories, tags, colors, localState ->
-        localState.copy(categories = tags, presetCategories = categories, suggestedTags = tags, tagColors = colors)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = SettingsDataCategoryUiState()
-    )
+        tagRepository.tags, tagRepository.colors, tagRepository.usageCounts, localUiState
+    ) { tags, colors, counts, local ->
+        local.copy(categories = tags, tagColors = colors, usageCounts = counts)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SettingsDataCategoryUiState())
 
-    fun setEditingCategory(value: String) = localUiState.update { it.copy(editingCategory = value) }
+    fun clearError() = localUiState.update { it.copy(error = null) }
 
-    fun addCategory(new: String, color: Int? = null) {
-        if (new.isBlank()) return
-        val old = localUiState.value.editingCategory
+    fun saveTag(old: String?, name: String, color: Int, onSaved: () -> Unit) =
+        mutate(old, onSaved) { tagRepository.save(old, name, color) }
+
+    fun deleteTag(tag: String, onDeleted: () -> Unit) =
+        mutate(tag, onDeleted) { tagRepository.delete(tag); null }
+
+    private fun mutate(old: String?, onSuccess: () -> Unit, operation: suspend () -> String?) {
+        if (localUiState.value.isSaving) return
+        localUiState.update { it.copy(isSaving = true, error = null) }
         viewModelScope.launch {
-            val presets = settingsRepository.categoriesFlow.first()
-            val category = resolveTag(new, tagRepository.tags.first())
-            val list = when {
-                old == category -> presets
-                category in presets -> presets.filterNot { it == old }
-                old in presets -> presets.map { if (it == old) category else it }
-                else -> presets + category
+            try {
+                val replacement = operation()
+                localUiState.update { it.copy(isSaving = false) }
+                onSuccess()
+                try {
+                    refreshWidgets(old, replacement)
+                } catch (exception: kotlinx.coroutines.CancellationException) {
+                    throw exception
+                } catch (exception: Exception) {
+                    android.util.Log.w("Tags", "Could not refresh tag widgets", exception)
+                }
+            } catch (exception: kotlinx.coroutines.CancellationException) {
+                throw exception
+            } catch (_: cn.super12138.todo.logic.DuplicateTagException) {
+                localUiState.update { it.copy(isSaving = false, error = cn.super12138.todo.R.string.tag_name_exists) }
+            } catch (_: Exception) {
+                localUiState.update { it.copy(isSaving = false, error = cn.super12138.todo.R.string.tag_change_failed) }
             }
-            settingsRepository.setCategories(list)
-            settingsRepository.ensureTagColors(tagRepository.tags.first() + category)
-            if (color != null) settingsRepository.setTagColor(category, color)
         }
     }
-
-    fun removeCategory(category: String) {
-        viewModelScope.launch {
-            settingsRepository.setCategories(settingsRepository.categoriesFlow.first() - category)
-        }
-    }
-
-    fun showAddDialog() = localUiState.update { it.copy(showAddDialog = true) }
-    fun hideAddDialog() = localUiState.update { it.copy(showAddDialog = false) }
 }

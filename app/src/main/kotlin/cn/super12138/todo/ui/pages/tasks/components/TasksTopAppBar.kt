@@ -15,6 +15,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -38,10 +41,12 @@ fun TasksTopAppBar(
     inSelectionMode: Boolean,
     selectedTasksIds: Set<Int>,
     onEnterSearchMode: () -> Unit,
+    onEnterSelectMode: () -> Unit,
     onSelectAll: () -> Unit,
     onExitSelectMode: () -> Unit,
     onDeleteSelectedTask: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onManageTags: (() -> Unit)? = null
 ) {
     val navIconEnterTransition = fadeIn(
         animationSpec = MaterialTheme.motionScheme.fastEffectsSpec()
@@ -142,12 +147,22 @@ fun TasksTopAppBar(
                         selectionMode -> {
                             ActionMultipleSelection(
                                 onSelectAll = onSelectAll,
-                                onDeleteSelectedTodo = onDeleteSelectedTask
+                                onDeleteSelectedTodo = onDeleteSelectedTask,
+                                hasSelection = selectedTasksIds.isNotEmpty()
                             )
                         }
 
-                        searchMode -> {}
-                        elseMode -> SearchButton(onEnterSearchMode)
+                        else -> Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (onManageTags != null) IconButton(onClick = onManageTags) {
+                                Icon(painterResource(R.drawable.ic_category), stringResource(R.string.tag_manage))
+                            }
+                            val selectLabel = stringResource(R.string.task_select_accessibility)
+                            TextButton(onClick = onEnterSelectMode,
+                                modifier = Modifier.semantics { contentDescription = selectLabel }) {
+                                Text(stringResource(R.string.task_select))
+                            }
+                            if (it != searchMode) SearchButton(onEnterSearchMode)
+                        }
                     }
                 }
             }
@@ -161,6 +176,7 @@ fun TasksTopAppBar(
 private fun ActionMultipleSelection(
     onSelectAll: () -> Unit,
     onDeleteSelectedTodo: () -> Unit,
+    hasSelection: Boolean,
     modifier: Modifier = Modifier
 ) {
     val view = LocalView.current
@@ -182,6 +198,7 @@ private fun ActionMultipleSelection(
         }
         IconButton(
             shapes = IconButtonDefaults.shapes(),
+            enabled = hasSelection,
             onClick = {
                 VibrationUtils.performHapticFeedback(view)
                 onDeleteSelectedTodo()

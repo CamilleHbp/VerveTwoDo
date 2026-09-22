@@ -28,9 +28,10 @@ class EditorViewModel(
     private val tagRepository: TagRepository,
     private val confettiController: ConfettiController
 ) : ViewModel() {
-    private val initialState = TaskEditorUiState(
+    private var initialState = TaskEditorUiState(
         content = initialTask?.content.orEmpty(),
         details = initialTask?.details.orEmpty(),
+        subtasks = initialTask?.subtasks.orEmpty(),
         tags = initialTask?.taskTags.orEmpty(),
         priority = Priority.fromFloat(initialTask?.priority ?: 0f),
         dueDateMillis = initialTask?.dueDateMillis,
@@ -49,6 +50,20 @@ class EditorViewModel(
     private var creationDefaultsApplied = false
     private var creationState = initialState
 
+    init {
+        viewModelScope.launch {
+            tagRepository.changes.collect { change ->
+                fun TaskEditorUiState.updatedTags() = copy(
+                    tags = cn.super12138.todo.logic.replaceTag(tags, change.old, change.replacement),
+                    category = if (category.trim() == change.old) change.replacement.orEmpty() else category
+                )
+                initialState = initialState.updatedTags()
+                creationState = creationState.updatedTags()
+                localUiState.update { it.updatedTags() }
+            }
+        }
+    }
+
     fun setCreationDefaults(category: String, dueDateMillis: Long?) {
         if (initialTask != null || creationDefaultsApplied) return
         creationDefaultsApplied = true
@@ -64,6 +79,18 @@ class EditorViewModel(
 
     fun setContentText(content: String) = localUiState.update { it.copy(content = content) }
     fun setDetailsText(details: String) = localUiState.update { it.copy(details = details) }
+    fun addSubtask() = localUiState.update {
+        it.copy(subtasks = it.subtasks + cn.super12138.todo.logic.database.Subtask(content = ""))
+    }
+    fun updateSubtask(id: String, content: String) = localUiState.update { state ->
+        state.copy(subtasks = state.subtasks.map { if (it.id == id) it.copy(content = content) else it })
+    }
+    fun setSubtaskCompleted(id: String, completed: Boolean) = localUiState.update { state ->
+        state.copy(subtasks = state.subtasks.map { if (it.id == id) it.copy(isCompleted = completed) else it })
+    }
+    fun removeSubtask(id: String) = localUiState.update { state ->
+        state.copy(subtasks = state.subtasks.filterNot { it.id == id })
+    }
     fun setCategoryText(category: String) = localUiState.update { it.copy(category = category) }
     fun addTag(input: String = localUiState.value.category) {
         val tag = resolveTag(input, uiState.value.categoryList + localUiState.value.tags)
@@ -89,7 +116,7 @@ class EditorViewModel(
         return state.content.trim() != initial.content || state.details != initial.details ||
             state.tags != initial.tags || state.category.isNotBlank() || state.priority != initial.priority ||
             state.isCompleted != initial.isCompleted || state.dueDateMillis != initial.dueDateMillis ||
-            state.dueTimeMinutes != initial.dueTimeMinutes
+            state.dueTimeMinutes != initial.dueTimeMinutes || state.subtasks != initial.subtasks
     }
 
     fun showDeleteConfirmDialog() = localUiState.update { it.copy(showDeleteConfirmDialog = true) }
@@ -113,6 +140,7 @@ class EditorViewModel(
                 settingsRepository.ensureTagColors(catalog + tags)
                 taskRepository.insertTask(TaskEntity(
                     content = state.content.trim(), details = state.details, tags = tags,
+                    subtasks = state.subtasks.filter { it.content.isNotBlank() }.map { it.copy(content = it.content.trim()) },
                     category = tags.firstOrNull().orEmpty(), isCompleted = state.isCompleted,
                     priority = state.priority.value, dueDateMillis = state.dueDateMillis,
                     dueTimeMinutes = state.dueTimeMinutes, id = initialTask?.id ?: 0,

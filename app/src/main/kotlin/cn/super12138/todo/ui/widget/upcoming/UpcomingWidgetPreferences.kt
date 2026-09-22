@@ -47,6 +47,12 @@ object UpcomingWidgetPreferences {
         preferences[categoriesKey] = categories
         preferences.remove(categoryKey)
     }
+
+    fun replaceTag(preferences: MutablePreferences, old: String, replacement: String?) {
+        val selected = categories(preferences)
+        if (old in selected) setCategories(preferences,
+            selected.mapNotNull { if (it == old) replacement else it }.toSet())
+    }
 }
 
 fun UpcomingTaskSort.labelRes(): Int = when (this) {

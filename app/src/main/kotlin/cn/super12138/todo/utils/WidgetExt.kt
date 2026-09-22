@@ -21,6 +21,18 @@ suspend fun updateTaskWidgets(context: Context) {
     UpcomingTaskWidget().updateAll(context)
 }
 
+suspend fun updateTagWidgets(context: Context, old: String?, replacement: String?) {
+    if (old != null && old != replacement) {
+        val manager = androidx.glance.appwidget.GlanceAppWidgetManager(context)
+        manager.getGlanceIds(UpcomingTaskWidget::class.java).forEach { id ->
+            androidx.glance.appwidget.state.updateAppWidgetState(context, id) { preferences ->
+                cn.super12138.todo.ui.widget.upcoming.UpcomingWidgetPreferences.replaceTag(preferences, old, replacement)
+            }
+        }
+    }
+    updateTaskWidgets(context)
+}
+
 object GlanceTypography {
     val defaultColor: ColorProvider
         @Composable get() = GlanceTheme.colors.onSurface

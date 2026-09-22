@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="overview_overdue">Overdue</string>
+    <string name="overview_next_seven_days">Next 7 days</string>
+    <string name="overview_all_tasks">All tasks</string>
+    <string name="overview_pending_tasks">Pending tasks</string>
+    <string name="overview_completed_tasks">Completed tasks</string>
+    <string name="overview_view_all">View all</string>
+    <plurals name="overview_view_remaining">
+        <item quantity="one">View %d more task</item>
+        <item quantity="other">View %d more tasks</item>
+    </plurals>
+    <string name="overview_show_all_tasks">Show all tasks</string>
+    <string name="overview_progress">Completed: %1$d / %2$d</string>
+    <string name="overview_empty_all">Your tasks start here. Add something you want to get done.</string>
+    <string name="overview_empty_pending">You are all caught up. No pending tasks.</string>
+    <string name="overview_empty_completed">Tasks you complete will appear here.</string>
+    <string name="overview_empty_overdue">Nothing overdue.</string>
+    <string name="overview_empty_today">Nothing scheduled for today.</string>
+    <string name="overview_empty_upcoming">Nothing due in the next 7 days.</string>
+    <string name="overview_open_task">Open task</string>
+    <string name="overview_restore_task">Mark %1$s as pending</string>
+    <string name="overview_restored_task">Marked as pending: %1$s</string>
+    <string name="overview_edit">Edit overview</string>
+    <string name="overview_back">Back to overview</string>
+    <string name="overview_edit_help">Hold a handle to drag, or use the arrows. Compact lists show 3 tasks; expanded lists show 6. Locks protect layout changes while task actions stay available.</string>
+    <string name="overview_move_up">Move %1$s up</string>
+    <string name="overview_move_down">Move %1$s down</string>
+    <string name="overview_drag_card">Drag to move %1$s</string>
+    <string name="overview_lock_card">Lock %1$s layout</string>
+    <string name="overview_unlock_card">Unlock %1$s layout</string>
+    <string name="overview_show_card">Show %1$s card</string>
+    <string name="overview_locked">Layout locked</string>
+    <string name="overview_shown">Shown</string>
+    <string name="overview_hidden">Hidden</string>
+    <string name="overview_compact">Compact</string>
+    <string name="overview_expanded">Expanded</string>
+    <string name="overview_overdue_visibility">Appears when there are overdue tasks.</string>
+    <string name="overview_reset_layout">Reset layout</string>
+    <string name="overview_reset_message">Restore the default cards, order, sizes, and visibility. This also clears layout locks. Your tasks stay unchanged.</string>
+    <string name="overview_reset">Reset</string>
+    <string name="overview_discard_title">Discard layout changes?</string>
+    <string name="overview_discard_message">Your saved overview will stay as it was.</string>
+    <string name="overview_discard">Discard</string>
+    <string name="overview_keep_editing">Keep editing</string>
+    <string name="overview_saving">Saving…</string>
+    <string name="overview_layout_saved">Overview saved</string>
+    <string name="overview_empty_layout">Make room for what matters</string>
+    <string name="overview_empty_layout_help">Show cards in Edit overview to bring your tasks and summaries back.</string>
+    <string name="overview_task_save_error">Could not update the task. Please try again.</string>
+    <string name="overview_layout_save_error">Could not save the layout. Your changes are still here. Please try again.</string>
+    <string name="overview_load_error">Could not load your overview. Please try again.</string>
+    <string name="overview_retry">Try again</string>
+    <plurals name="overview_task_count">
+        <item quantity="one">%d task</item>
+        <item quantity="other">%d tasks</item>
+    </plurals>
+</resources>

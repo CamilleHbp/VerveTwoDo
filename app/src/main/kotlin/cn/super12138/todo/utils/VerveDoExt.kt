@@ -35,8 +35,6 @@ import java.time.LocalDate
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.milliseconds
 
 val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
@@ -115,64 +113,23 @@ fun Long?.toLocalDateString(): String {
 }
 
 /**
- * 将时间戳转换为相对时间字符串
- *
- * @receiver Long? 时间戳（单位为毫秒）或 null
- * @param context 上下文，用于获取字符串资源
- * @return String 格式化后的相对时间字符串。如果为传入参数为null则返回空字符串，反之根据时间差返回相应的字符串，如“今天”、“明天”、“3天后”、“2周后”、“1个月后”、“1年后”等
+ * Formats a due date relative to the local calendar day, including timed and DST dates.
  */
 fun Long?.toRelativeTimeString(context: Context): String {
     if (this == null) return ""
-    val today = SystemUtils.getStartOfDayMillis(0)
-
-    return when (this - today) {
-        in 0L..0L -> context.getString(R.string.time_today)
-
-        // 将来的时间
-        in 1.days.inWholeMilliseconds..1.days.inWholeMilliseconds -> context.getString(R.string.time_tomorrow)
-        in 2.days.inWholeMilliseconds..6.days.inWholeMilliseconds -> context.getString(
-            R.string.time_in_days,
-            ((this - today).milliseconds.inWholeDays).toInt()
-        )
-
-        in 7.days.inWholeMilliseconds..29.days.inWholeMilliseconds -> context.getString(
-            R.string.time_in_weeks,
-            ((this - today).milliseconds.inWholeDays / 7).toInt()
-        )
-
-        in 30.days.inWholeMilliseconds..364.days.inWholeMilliseconds -> context.getString(
-            R.string.time_in_months,
-            ((this - today).milliseconds.inWholeDays / 30).toInt()
-        )
-
-        in 365.days.inWholeMilliseconds..Long.MAX_VALUE -> context.getString(
-            R.string.time_in_years,
-            ((this - today).milliseconds.inWholeDays / 365).toInt()
-        )
-
-        // 过去的时间
-        in (-1).days.inWholeMilliseconds..(-1).days.inWholeMilliseconds -> context.getString(R.string.time_yesterday)
-        in (-6).days.inWholeMilliseconds..(-2).days.inWholeMilliseconds -> context.getString(
-            R.string.time_days_ago,
-            (-(this - today).milliseconds.inWholeDays).toInt()
-        )
-
-        in (-29).days.inWholeMilliseconds..(-7).days.inWholeMilliseconds -> context.getString(
-            R.string.time_weeks_ago,
-            (-(this - today).milliseconds.inWholeDays / 7).toInt()
-        )
-
-        in (-364).days.inWholeMilliseconds..(-30).days.inWholeMilliseconds -> context.getString(
-            R.string.time_months_ago,
-            (-(this - today).milliseconds.inWholeDays / 30).toInt()
-        )
-
-        in Long.MIN_VALUE..(-365).days.inWholeMilliseconds -> context.getString(
-            R.string.time_years_ago,
-            (-(this - today).milliseconds.inWholeDays / 365).toInt()
-        )
-
-        else -> context.getString(R.string.time_today)
+    val days = java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(), this.toLocalDate())
+    return when {
+        days == 0L -> context.getString(R.string.time_today)
+        days == 1L -> context.getString(R.string.time_tomorrow)
+        days == -1L -> context.getString(R.string.time_yesterday)
+        days in 2..6 -> context.getString(R.string.time_in_days, days.toInt())
+        days in 7..29 -> context.getString(R.string.time_in_weeks, (days / 7).toInt())
+        days in 30..364 -> context.getString(R.string.time_in_months, (days / 30).toInt())
+        days >= 365 -> context.getString(R.string.time_in_years, (days / 365).toInt())
+        days in -6..-2 -> context.getString(R.string.time_days_ago, (-days).toInt())
+        days in -29..-7 -> context.getString(R.string.time_weeks_ago, (-days / 7).toInt())
+        days in -364..-30 -> context.getString(R.string.time_months_ago, (-days / 30).toInt())
+        else -> context.getString(R.string.time_years_ago, (-days / 365).toInt())
     }
 }
 

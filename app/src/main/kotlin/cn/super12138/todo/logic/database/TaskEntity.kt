@@ -19,6 +19,7 @@ data class TaskEntity(
     @ColumnInfo(name = "details", defaultValue = "''") val details: String = "",
     @ColumnInfo(name = "tags", defaultValue = "'[]'") val tags: List<String> = emptyList(),
     @ColumnInfo(name = "due_time") val dueTimeMinutes: Int? = null,
+    @ColumnInfo(name = "subtasks", defaultValue = "'[]'") val subtasks: List<Subtask> = emptyList(),
 )
 
 /** Old backups and navigation entries still carry their single category. */

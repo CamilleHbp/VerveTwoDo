@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tag_color_wheel">色轮</string>
+    <string name="tag_color_brightness">亮度</string>
+    <string name="tag_manage">管理标签</string>
+    <string name="tag_manage_description">重命名、更改颜色或删除所有任务中的标签。</string>
+    <string name="tag_edit">编辑标签</string>
+    <string name="tag_edit_named">编辑标签“%1$s”</string>
+    <string name="tag_create">新建标签</string>
+    <string name="tag_name">标签名称</string>
+    <string name="tag_name_exists">已存在同名标签，请使用其他名称。</string>
+    <string name="tag_change_failed">无法更新标签，请重试。</string>
+    <string name="tag_edit_scope">更改将应用于所有使用此标签的任务。</string>
+    <string name="tag_delete">删除标签</string>
+    <string name="tag_delete_title">删除“%1$s”？</string>
+    <string name="tag_delete_unused">此标签将从已保存的标签中移除。任务将保留。</string>
+    <string name="tag_no_tasks">没有任务</string>
+    <string name="tag_empty">暂无标签</string>
+    <string name="tag_empty_description">添加标签以整理任务。</string>
+    <plurals name="tag_task_count">
+        <item quantity="other">%d 个任务</item>
+    </plurals>
+    <plurals name="tag_delete_message">
+        <item quantity="other">此标签将从 %d 个任务和已保存的标签中移除。任务将保留。</item>
+    </plurals>
+</resources>

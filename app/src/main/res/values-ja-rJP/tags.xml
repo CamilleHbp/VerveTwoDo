@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tag_color_wheel">色相環</string>
+    <string name="tag_color_brightness">明るさ</string>
+    <string name="tag_manage">タグを管理</string>
+    <string name="tag_manage_description">すべてのタスクでタグの名前や色の変更、削除を行います。</string>
+    <string name="tag_edit">タグを編集</string>
+    <string name="tag_edit_named">タグ「%1$s」を編集</string>
+    <string name="tag_create">新しいタグ</string>
+    <string name="tag_name">タグ名</string>
+    <string name="tag_name_exists">同じ名前のタグがすでにあります。別の名前を入力してください。</string>
+    <string name="tag_change_failed">タグを更新できませんでした。もう一度お試しください。</string>
+    <string name="tag_edit_scope">変更はこのタグを使うすべてのタスクに適用されます。</string>
+    <string name="tag_delete">タグを削除</string>
+    <string name="tag_delete_title">「%1$s」を削除しますか？</string>
+    <string name="tag_delete_unused">保存済みのタグから削除されます。タスクは残ります。</string>
+    <string name="tag_no_tasks">タスクなし</string>
+    <string name="tag_empty">タグがありません</string>
+    <string name="tag_empty_description">タグを追加してタスクを整理しましょう。</string>
+    <plurals name="tag_task_count">
+        <item quantity="other">%d 件のタスク</item>
+    </plurals>
+    <plurals name="tag_delete_message">
+        <item quantity="other">%d 件のタスクと保存済みのタグから削除されます。タスクは残ります。</item>
+    </plurals>
+</resources>

@@ -60,6 +60,7 @@ import cn.super12138.todo.logic.database.taskTags
 import cn.super12138.todo.ui.widget.components.TagColorStrokes
 import cn.super12138.todo.logic.database.TaskEntity
 import cn.super12138.todo.logic.model.Priority
+import cn.super12138.todo.ui.widget.components.GlancePriorityIcon
 import cn.super12138.todo.ui.activities.MainActivity
 import cn.super12138.todo.utils.GlanceTypography
 import cn.super12138.todo.utils.glanceContainerColor
@@ -435,14 +436,16 @@ private fun UpcomingTaskRow(task: TaskEntity, today: LocalDate, showDate: Boolea
             modifier = GlanceModifier.width(64.dp).padding(end = 8.dp).clickable(open))
         Box(contentAlignment = Alignment.CenterStart, modifier = GlanceModifier.defaultWeight().clickable(open)) {
             Spacer(GlanceModifier.height(48.dp))
-            Column(modifier = GlanceModifier.fillMaxWidth().padding(vertical = 8.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically,
+                modifier = GlanceModifier.fillMaxWidth().padding(vertical = 8.dp)) {
                 Text(task.content, style = GlanceTypography.titleMedium.copy(fontWeight = FontWeight.Normal,
                     color = if (task.isCompleted) GlanceTheme.colors.onSurfaceVariant else GlanceTheme.colors.onSurface,
-                    textDecoration = if (task.isCompleted) TextDecoration.LineThrough else TextDecoration.None), maxLines = titleLines)
-                if (priority != Priority.Default) Text(context.getString(priority.nameRes),
-                    style = GlanceTypography.labelMedium.copy(
-                        color = if (overdue) GlanceTheme.colors.error else GlanceTheme.colors.onSurfaceVariant,
-                        fontWeight = FontWeight.Normal), maxLines = 1)
+                    textDecoration = if (task.isCompleted) TextDecoration.LineThrough else TextDecoration.None),
+                    maxLines = titleLines, modifier = GlanceModifier.defaultWeight())
+                if (priority != Priority.Default) {
+                    GlancePriorityIcon(priority, modifier = GlanceModifier.padding(start = 8.dp),
+                        tint = if (task.isCompleted) GlanceTheme.colors.onSurfaceVariant else priority.glanceContainerColor())
+                }
             }
         }
     }
@@ -451,7 +454,10 @@ private fun UpcomingTaskRow(task: TaskEntity, today: LocalDate, showDate: Boolea
 private fun dateLabel(context: Context, date: LocalDate, today: LocalDate): String = when (date) {
     today -> context.getString(R.string.time_today)
     today.plusDays(1) -> context.getString(R.string.time_tomorrow)
-    else -> date.format(DateTimeFormatter.ofPattern(if (date.year == today.year) "d MMM" else "d MMM yy"))
+    else -> date.format(DateTimeFormatter.ofPattern(
+        if (date.year == today.year) "d MMM" else "d MMM yy",
+        context.resources.configuration.locales[0]
+    ))
 }
 
 private fun UpcomingTaskSort.shortLabelRes(): Int = when (this) {

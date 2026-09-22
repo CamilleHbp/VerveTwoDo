@@ -30,7 +30,6 @@ import cn.super12138.todo.R
 import cn.super12138.todo.logic.model.Priority
 import cn.super12138.todo.ui.VerveDoDefaults
 import cn.super12138.todo.utils.GlanceTypography
-import cn.super12138.todo.utils.glanceContainerColor
 import cn.super12138.todo.utils.toColorProvider
 import cn.super12138.todo.utils.toLocalDateString
 import cn.super12138.todo.utils.toRelativeTimeString
@@ -51,10 +50,6 @@ fun GlanceTaskCard(
     onCheckedAction: Action? = null,
     onChecked: () -> Unit = {}
 ) {
-    val context = LocalContext.current
-
-    val priorityText = remember(priority) { context.getString(priority.nameRes) }
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
@@ -91,16 +86,11 @@ fun GlanceTaskCard(
                         style = GlanceTypography.labelMedium.copy(
                             color = GlanceTheme.colors.onSurfaceVariant
                         ),
-                        maxLines = 1
+                        maxLines = 1,
+                        modifier = GlanceModifier.defaultWeight()
                     )
                     Spacer(GlanceModifier.size(VerveDoDefaults.contentPadding))
-                    Text(
-                        text = priorityText,
-                        style = GlanceTypography.labelMedium.copy(
-                            color = priority.glanceContainerColor()
-                        ),
-                        maxLines = 1
-                    )
+                    GlancePriorityIcon(priority)
                 }
                 if (showDueDate) {
                     dueDateMillis?.let {

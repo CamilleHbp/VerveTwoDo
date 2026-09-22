@@ -64,7 +64,9 @@ fun SharedTransitionScope.TasksPage(
     modifier: Modifier = Modifier,
     toTaskAddPage: () -> Unit,
     toTaskEditPage: (TaskEntity) -> Unit,
-    viewModel: TaskViewModel = koinViewModel()
+    toTaskViewPage: (TaskEntity) -> Unit = toTaskEditPage,
+    viewModel: TaskViewModel = koinViewModel(),
+    toTagManager: (() -> Unit)? = null
 ) {
     val animatedVisibilityScope = LocalNavAnimatedContentScope.current
     val fadeScaleTransition = fadeScale()
@@ -96,7 +98,7 @@ fun SharedTransitionScope.TasksPage(
 
     val expandedFab by remember { derivedStateOf { taskListState.firstVisibleItemIndex == 0 } }
 
-    BackHandler {
+    BackHandler(enabled = uiState.inSelectionMode || uiState.inSearchMode) {
         if (uiState.inSelectionMode) {
             viewModel.exitMultiSelectMode()
         } else if (uiState.inSearchMode) {
@@ -111,9 +113,11 @@ fun SharedTransitionScope.TasksPage(
                 inSelectionMode = uiState.inSelectionMode,
                 selectedTasksIds = uiState.selectedTaskIds,
                 onExitSelectMode = viewModel::exitMultiSelectMode,
+                onEnterSelectMode = viewModel::enterMultiSelectMode,
                 onSelectAll = { viewModel.selectVisibleAllTask(taskList) },
                 onDeleteSelectedTask = viewModel::showDeleteConfirmDialog,
-                onEnterSearchMode = viewModel::enterSearchMode
+                onEnterSearchMode = viewModel::enterSearchMode,
+                onManageTags = toTagManager
             )
         },
         floatingActionButton = {
@@ -148,6 +152,10 @@ fun SharedTransitionScope.TasksPage(
                     onExitSearchMode = viewModel::exitSearchMode,
                     modifier = Modifier.fillMaxWidth()
                 )
+            }
+            if (uiState.inSelectionMode && uiState.selectedTaskIds.isEmpty()) {
+                Text(stringResource(R.string.task_selection_hint), style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             AnimatedContent(
                 targetState = taskList.isEmpty(),
@@ -212,18 +220,19 @@ fun SharedTransitionScope.TasksPage(
                                 dueDateMillis = task.dueDateMillis,
                                 priority = priority,
                                 selected = selected,
+                                selectionMode = uiState.inSelectionMode,
                                 onClick = {
                                     if (uiState.inSelectionMode) {
                                         viewModel.toggleTaskSelection(task)
                                     } else {
-                                        toTaskEditPage(task)
+                                        toTaskViewPage(task)
                                     }
                                 },
                                 onLongClick = {
                                     if (uiState.inSelectionMode) {
                                         viewModel.toggleTaskSelection(task)
                                     } else {
-                                        viewModel.enterMultiSelectMode(task.id)
+                                        toTaskEditPage(task)
                                     }
                                 },
                                 onChecked = {

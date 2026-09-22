@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tag_color_wheel">색상환</string>
+    <string name="tag_color_brightness">밝기</string>
+    <string name="tag_manage">태그 관리</string>
+    <string name="tag_manage_description">모든 작업에서 태그 이름과 색상을 변경하거나 태그를 삭제합니다.</string>
+    <string name="tag_edit">태그 편집</string>
+    <string name="tag_edit_named">%1$s 태그 편집</string>
+    <string name="tag_create">새 태그</string>
+    <string name="tag_name">태그 이름</string>
+    <string name="tag_name_exists">같은 이름의 태그가 이미 있습니다. 다른 이름을 선택하세요.</string>
+    <string name="tag_change_failed">태그를 업데이트하지 못했습니다. 다시 시도하세요.</string>
+    <string name="tag_edit_scope">변경 사항은 이 태그를 사용하는 모든 작업에 적용됩니다.</string>
+    <string name="tag_delete">태그 삭제</string>
+    <string name="tag_delete_title">“%1$s” 태그를 삭제할까요?</string>
+    <string name="tag_delete_unused">저장된 태그에서 삭제됩니다. 작업은 유지됩니다.</string>
+    <string name="tag_no_tasks">작업 없음</string>
+    <string name="tag_empty">아직 태그가 없습니다</string>
+    <string name="tag_empty_description">태그를 추가하여 작업을 정리하세요.</string>
+    <plurals name="tag_task_count">
+        <item quantity="other">작업 %d개</item>
+    </plurals>
+    <plurals name="tag_delete_message">
+        <item quantity="other">작업 %d개와 저장된 태그에서 이 태그가 삭제됩니다. 작업은 유지됩니다.</item>
+    </plurals>
+</resources>

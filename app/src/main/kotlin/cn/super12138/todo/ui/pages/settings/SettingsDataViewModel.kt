@@ -121,7 +121,7 @@ class SettingsDataViewModel(
             val tasks = taskRepository.getAllTasks().first()
 
             val header =
-                listOf("content", "category", "isCompleted", "priority", "dueDateMillis", "id", "createdAtMillis", "details", "tags", "dueTimeMinutes")
+                listOf("content", "category", "isCompleted", "priority", "dueDateMillis", "id", "createdAtMillis", "details", "tags", "dueTimeMinutes", "subtasks")
 
             val rows = tasks.map { task ->
                 with(task) {
@@ -135,7 +135,8 @@ class SettingsDataViewModel(
                         createdAtMillis?.toString() ?: "",
                         details,
                         kotlinx.serialization.json.Json.encodeToString(task.taskTags),
-                        dueTimeMinutes?.toString() ?: ""
+                        dueTimeMinutes?.toString() ?: "",
+                        kotlinx.serialization.json.Json.encodeToString(subtasks)
                     )
                 }
             }

@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import cn.super12138.todo.constants.Constants
 import cn.super12138.todo.logic.DEFAULT_DUE_TIME_MINUTES
 import cn.super12138.todo.logic.assignTagColors
+import cn.super12138.todo.logic.model.OverviewLayout
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
@@ -35,6 +36,13 @@ class DataStoreManager(val dataStore: DataStore<Preferences>) {
     private val CATEGORIES = stringPreferencesKey(Constants.PREF_CATEGORIES)
     private val TAG_COLORS = stringPreferencesKey("tag_colors")
     private val DEFAULT_DUE_TIME = intPreferencesKey("default_due_time_minutes")
+    private val OVERVIEW_LAYOUT = stringPreferencesKey("overview_layout_v1")
+
+    val overviewLayoutFlow = dataStore.data.map { OverviewLayout.decode(it[OVERVIEW_LAYOUT]) }
+
+    suspend fun setOverviewLayout(layout: OverviewLayout) {
+        dataStore.edit { it[OVERVIEW_LAYOUT] = layout.normalized().encode() }
+    }
 
     val tagColorsFlow = dataStore.data.map { preferences ->
         Json.decodeFromString<Map<String, Int>>(preferences[TAG_COLORS] ?: "{}")
@@ -55,6 +63,19 @@ class DataStoreManager(val dataStore: DataStore<Preferences>) {
         dataStore.edit { preferences ->
             val existing = Json.decodeFromString<Map<String, Int>>(preferences[TAG_COLORS] ?: "{}")
             preferences[TAG_COLORS] = Json.encodeToString(existing + (tag to color))
+        }
+    }
+
+    suspend fun updateTag(old: String?, replacement: String?, color: Int?) {
+        dataStore.edit { preferences ->
+            val presets = Json.decodeFromString<List<String>>(preferences[CATEGORIES] ?: Constants.PREF_CATEGORIES_DEFAULT)
+            val colors = Json.decodeFromString<Map<String, Int>>(preferences[TAG_COLORS] ?: "{}")
+            val updated = if (old == null) presets else cn.super12138.todo.logic.replaceTag(presets, old, replacement)
+            preferences[CATEGORIES] = Json.encodeToString((updated + listOfNotNull(replacement)).distinct())
+            val newColors = if (old == null) colors else colors - old
+            preferences[TAG_COLORS] = Json.encodeToString(
+                if (replacement != null && color != null) newColors + (replacement to color) else newColors
+            )
         }
     }
 

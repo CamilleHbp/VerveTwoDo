@@ -17,7 +17,14 @@ class TaskRepository(private val taskDao: TaskDao) {
 
     fun getAllTasks(): Flow<List<TaskEntity>> = taskDao.getAll()
 
+    fun observeTask(taskId: Int): Flow<TaskEntity?> = taskDao.observeTask(taskId)
+
+    suspend fun setSubtaskCompleted(taskId: Int, subtaskId: String, completed: Boolean) =
+        taskDao.setSubtaskCompleted(taskId, subtaskId, completed)
+
     fun getCategories(): Flow<List<String>> = taskDao.getAll().map { tasks -> tasks.flatMap { it.taskTags }.distinct() }
+
+    suspend fun replaceTag(old: String, replacement: String?) = taskDao.replaceTag(old, replacement)
 
     suspend fun updateTask(task: TaskEntity) {
         taskDao.update(task)

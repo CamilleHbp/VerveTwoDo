@@ -185,11 +185,10 @@ class MainActivity : ComponentActivity(), AndroidScopeComponent {
         lifecycleScope.launch {
             val task = get<TaskRepository>().getAllTasks().first().find { it.id == taskId } ?: return@launch
             val backStack: TopLevelBackStack<NavKey> = get()
-            val current = backStack.backStack.lastOrNull() as? VerveDoScreen.Editor.Edit
-            if (current?.task != task) {
-                if (current?.task?.id == taskId) backStack.removeLast()
+            val current = backStack.backStack.lastOrNull() as? VerveDoScreen.TaskDetail
+            if (current?.taskId != taskId) {
                 backStack.addTopLevel(VerveDoScreen.Tasks)
-                backStack.add(VerveDoScreen.Editor.Edit(task))
+                backStack.add(VerveDoScreen.TaskDetail(task.id))
             }
         }
     }

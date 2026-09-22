@@ -1,7 +1,17 @@
 package cn.super12138.todo.ui.pages.settings
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -12,164 +22,109 @@ import androidx.compose.ui.unit.dp
 import cn.super12138.todo.logic.nextTagColor
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.foundation.layout.padding
+import cn.super12138.todo.ui.components.TagManagementDialog
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cn.super12138.todo.R
-import cn.super12138.todo.ui.VerveDoDefaults
-import cn.super12138.todo.ui.components.EmptyTip
-import cn.super12138.todo.ui.components.EmptyTipType
 import cn.super12138.todo.ui.components.TodoFloatingActionButton
 import cn.super12138.todo.ui.components.TopAppBarScaffold
-import cn.super12138.todo.ui.pages.settings.components.SettingsContainer
-import cn.super12138.todo.ui.pages.settings.components.SettingsItem
-import cn.super12138.todo.ui.pages.settings.components.category.CategoryPromptDialog
-import cn.super12138.todo.ui.theme.fadeScale
-import cn.super12138.todo.utils.VibrationUtils
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SettingsDataCategory(
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsDataCategoryViewModel = koinViewModel()
 ) {
-    val view = LocalView.current
-
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    val listState = rememberLazyListState()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val isListEmpty by remember { derivedStateOf { uiState.categories.isEmpty() } }
-    val isExpanded by remember { derivedStateOf { listState.firstVisibleItemIndex == 0 } }
-
-    val transitionSpec = fadeScale()
+    var editingTag by rememberSaveable { mutableStateOf<String?>(null) }
 
     TopAppBarScaffold(
-        title = stringResource(R.string.pref_category_category_management),
+        title = stringResource(R.string.tag_manage),
         onBack = onNavigateUp,
-        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             TodoFloatingActionButton(
                 iconRes = R.drawable.ic_add,
-                text = stringResource(R.string.action_add_category),
-                expanded = isExpanded,
-                onClick = {
-                    viewModel.setEditingCategory("")
-                    viewModel.showAddDialog()
-                }
+                text = stringResource(R.string.tag_create),
+                expanded = true,
+                onClick = { editingTag = "" }
             )
         },
-        modifier = modifier,
+        modifier = modifier
     ) {
-        AnimatedContent(
-            targetState = isListEmpty,
-            transitionSpec = { transitionSpec }
-        ) {
-            if (it) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    EmptyTip(
-                        type = EmptyTipType.List,
-                        size = VerveDoDefaults.Sizes.EmptyTip.large,
-                        shape = MaterialShapes.Gem.toShape()
-                    )
-
-                    Text(
-                        text = stringResource(R.string.tip_no_category_page),
-                        style = MaterialTheme.typography.titleMedium,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+            LazyColumn(Modifier.widthIn(max = 720.dp).fillMaxSize(),
+                contentPadding = PaddingValues(top = 8.dp, bottom = 104.dp)) {
+                item {
+                    Text(stringResource(R.string.tag_manage_description),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 20.dp))
                 }
-            } else {
-                SettingsContainer(Modifier.fillMaxSize()) {
-                    items(
-                        items = uiState.categories,
-                        key = { category -> category }
-                    ) { category ->
-                        SettingsItem(
-                            leadingIcon = {
-                                Box(Modifier.size(16.dp).background(Color(uiState.tagColors[category]
-                                    ?: nextTagColor(emptySet())), CircleShape))
-                            },
-                            headlineContent = {
-                                Text(
-                                    text = category,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                            },
-                            trailingContent = {
-                                if (category in uiState.presetCategories) {
-                                FilledTonalIconButton(
-                                    shapes = IconButtonDefaults.shapes(),
-                                    onClick = {
-                                        VibrationUtils.performHapticFeedback(view)
-                                        viewModel.removeCategory(category)
-                                    }
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_delete),
-                                        contentDescription = stringResource(R.string.action_delete)
-                                    )
-                                }
-                                }
-                            },
-                            onClick = {
-                                viewModel.setEditingCategory(category)
-                                viewModel.showAddDialog()
-                            },
-                            modifier = Modifier.animateItem(
-                                fadeInSpec = MaterialTheme.motionScheme.defaultEffectsSpec(),
-                                placementSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
-                                fadeOutSpec = MaterialTheme.motionScheme.defaultEffectsSpec()
+                if (uiState.categories.isEmpty()) item {
+                    Column(Modifier.fillMaxWidth().padding(vertical = 32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(stringResource(R.string.tag_empty), style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.tag_empty_description), textAlign = TextAlign.Center)
+                    }
+                }
+                itemsIndexed(uiState.categories, key = { _, tag -> tag }) { index, tag ->
+                    val top = if (index == 0) 16.dp else 0.dp
+                    val bottom = if (index == uiState.categories.lastIndex) 16.dp else 0.dp
+                    Surface(
+                        onClick = { editingTag = tag },
+                        shape = RoundedCornerShape(topStart = top, topEnd = top, bottomStart = bottom, bottomEnd = bottom),
+                        color = MaterialTheme.colorScheme.surfaceContainerLow,
+                        modifier = Modifier.fillMaxWidth().animateItem()
+                    ) {
+                        Column {
+                            Row(
+                                Modifier.fillMaxWidth().heightIn(min = 56.dp)
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                Box(Modifier.size(14.dp)
+                                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
+                                    .background(Color(uiState.tagColors[tag] ?: nextTagColor(emptySet())), CircleShape))
+                                Text(tag, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge,
+                                    maxLines = 2, overflow = TextOverflow.Ellipsis)
+                                val count = uiState.usageCounts[tag] ?: 0
+                                Text(if (count == 0) stringResource(R.string.tag_no_tasks)
+                                    else pluralStringResource(R.plurals.tag_task_count, count, count),
+                                    modifier = Modifier.widthIn(max = 104.dp),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = TextAlign.End)
+                                Icon(painterResource(R.drawable.ic_edit_task), null, Modifier.size(18.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                            if (index != uiState.categories.lastIndex) HorizontalDivider(
+                                Modifier.padding(start = 46.dp, end = 16.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                             )
-                        )
+                        }
                     }
                 }
             }
         }
-
-        CategoryPromptDialog(
-            visible = uiState.showAddDialog,
-            initialCategory = uiState.editingCategory,
-            suggestedTags = uiState.suggestedTags,
-            onSave = { viewModel.addCategory(it) },
-            initialColor = uiState.tagColors[uiState.editingCategory]
-                ?: nextTagColor(uiState.tagColors.values.toSet()),
-            onSaveColor = { tag, color -> viewModel.addCategory(tag, color) },
-            onDismiss = { viewModel.hideAddDialog() }
-        )
+    }
+    editingTag?.let { tag ->
+        TagManagementDialog(tag = tag, onDismiss = { editingTag = null }, viewModel = viewModel)
     }
 }

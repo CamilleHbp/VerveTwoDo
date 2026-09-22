@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tag_color_wheel">Цветовой круг</string>
+    <string name="tag_color_brightness">Яркость</string>
+    <string name="tag_manage">Управление тегами</string>
+    <string name="tag_manage_description">Меняйте названия и цвета тегов или удаляйте их во всех задачах.</string>
+    <string name="tag_edit">Изменить тег</string>
+    <string name="tag_edit_named">Изменить тег %1$s</string>
+    <string name="tag_create">Новый тег</string>
+    <string name="tag_name">Название тега</string>
+    <string name="tag_name_exists">Тег с таким названием уже есть. Выберите другое название.</string>
+    <string name="tag_change_failed">Не удалось обновить тег. Попробуйте ещё раз.</string>
+    <string name="tag_edit_scope">Изменения применяются ко всем задачам с этим тегом.</string>
+    <string name="tag_delete">Удалить тег</string>
+    <string name="tag_delete_title">Удалить «%1$s»?</string>
+    <string name="tag_delete_unused">Тег будет удалён из сохранённых тегов. Задачи сохранятся.</string>
+    <string name="tag_no_tasks">Нет задач</string>
+    <string name="tag_empty">Тегов пока нет</string>
+    <string name="tag_empty_description">Добавьте тег, чтобы упорядочить задачи.</string>
+    <plurals name="tag_task_count">
+        <item quantity="one">%d задача</item>
+        <item quantity="few">%d задачи</item>
+        <item quantity="many">%d задач</item>
+        <item quantity="other">%d задач</item>
+    </plurals>
+    <plurals name="tag_delete_message">
+        <item quantity="one">Тег будет удалён из %d задачи и сохранённых тегов. Задача сохранится.</item>
+        <item quantity="few">Тег будет удалён из %d задач и сохранённых тегов. Задачи сохранятся.</item>
+        <item quantity="many">Тег будет удалён из %d задач и сохранённых тегов. Задачи сохранятся.</item>
+        <item quantity="other">Тег будет удалён из %d задач и сохранённых тегов. Задачи сохранятся.</item>
+    </plurals>
+</resources>

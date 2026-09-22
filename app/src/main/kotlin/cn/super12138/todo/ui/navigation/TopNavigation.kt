@@ -85,18 +85,32 @@ fun TopNavigation(
             ),
             entryProvider = entryProvider {
                 entry<VerveDoScreen.Overview> {
-                    OverviewPage()
+                    OverviewPage(
+                        toTaskAddPage = { backStack.add(VerveDoScreen.Editor.Add) },
+                        toTaskViewPage = { backStack.add(VerveDoScreen.TaskDetail(it.id)) },
+                        toTaskEditPage = { backStack.add(VerveDoScreen.Editor.Edit(it)) }
+                    )
                 }
 
                 entry<VerveDoScreen.Tasks> {
                     TasksPage(
                         toTaskAddPage = { backStack.add(VerveDoScreen.Editor.Add) },
-                        toTaskEditPage = { backStack.add(VerveDoScreen.Editor.Edit(it)) }
+                        toTaskViewPage = { backStack.add(VerveDoScreen.TaskDetail(it.id)) },
+                        toTaskEditPage = { backStack.add(VerveDoScreen.Editor.Edit(it)) },
+                        toTagManager = { backStack.add(VerveDoScreen.Settings.DataCategory) }
                     )
                 }
 
                 entry<VerveDoScreen.Editor.Add>(metadata = editorTransition()) {
                     TaskAddPage(onNavigateUp = ::onBack)
+                }
+
+                entry<VerveDoScreen.TaskDetail>(metadata = settingsTransition()) { args ->
+                    cn.super12138.todo.ui.pages.detail.TaskDetailPage(
+                        taskId = args.taskId,
+                        onBack = ::onBack,
+                        onEdit = { backStack.add(VerveDoScreen.Editor.Edit(it)) }
+                    )
                 }
 
                 entry<VerveDoScreen.Editor.Edit>(metadata = editorTransition()) { editorArgs ->

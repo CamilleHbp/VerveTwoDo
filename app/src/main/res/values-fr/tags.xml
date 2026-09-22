@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tag_color_wheel">Roue des couleurs</string>
+    <string name="tag_color_brightness">Luminosité</string>
+    <string name="tag_manage">Gérer les tags</string>
+    <string name="tag_manage_description">Renommez, recolorez ou supprimez les tags de vos tâches.</string>
+    <string name="tag_edit">Modifier le tag</string>
+    <string name="tag_edit_named">Modifier le tag %1$s</string>
+    <string name="tag_create">Nouveau tag</string>
+    <string name="tag_name">Nom du tag</string>
+    <string name="tag_name_exists">Ce nom existe déjà. Choisissez un autre nom.</string>
+    <string name="tag_change_failed">Impossible de modifier ce tag. Réessayez.</string>
+    <string name="tag_edit_scope">Les modifications s’appliquent à toutes les tâches utilisant ce tag.</string>
+    <string name="tag_delete">Supprimer le tag</string>
+    <string name="tag_delete_title">Supprimer « %1$s » ?</string>
+    <string name="tag_delete_unused">Ce tag sera supprimé de vos tags enregistrés. Vos tâches seront conservées.</string>
+    <string name="tag_no_tasks">Aucune tâche</string>
+    <string name="tag_empty">Aucun tag pour le moment</string>
+    <string name="tag_empty_description">Ajoutez un tag pour organiser vos tâches.</string>
+    <plurals name="tag_task_count">
+        <item quantity="one">%d tâche</item>
+        <item quantity="many">%d tâches</item>
+        <item quantity="other">%d tâches</item>
+    </plurals>
+    <plurals name="tag_delete_message">
+        <item quantity="one">Ce tag sera retiré de %d tâche et de vos tags enregistrés. La tâche sera conservée.</item>
+        <item quantity="many">Ce tag sera retiré de %d tâches et de vos tags enregistrés. Les tâches seront conservées.</item>
+        <item quantity="other">Ce tag sera retiré de %d tâches et de vos tags enregistrés. Les tâches seront conservées.</item>
+    </plurals>
+</resources>

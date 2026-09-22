@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tag_color_wheel">عجلة الألوان</string>
+    <string name="tag_color_brightness">السطوع</string>
+    <string name="tag_manage">إدارة الوسوم</string>
+    <string name="tag_manage_description">أعد تسمية الوسوم أو غيّر ألوانها أو احذفها من جميع المهام.</string>
+    <string name="tag_edit">تعديل الوسم</string>
+    <string name="tag_edit_named">تعديل الوسم %1$s</string>
+    <string name="tag_create">وسم جديد</string>
+    <string name="tag_name">اسم الوسم</string>
+    <string name="tag_name_exists">يوجد وسم بهذا الاسم بالفعل. اختر اسمًا آخر.</string>
+    <string name="tag_change_failed">تعذّر تحديث الوسم. حاول مرة أخرى.</string>
+    <string name="tag_edit_scope">تنطبق التغييرات على جميع المهام التي تستخدم هذا الوسم.</string>
+    <string name="tag_delete">حذف الوسم</string>
+    <string name="tag_delete_title">هل تريد حذف «%1$s»؟</string>
+    <string name="tag_delete_unused">سيُحذف هذا الوسم من الوسوم المحفوظة. ستبقى مهامك محفوظة.</string>
+    <string name="tag_no_tasks">لا توجد مهام</string>
+    <string name="tag_empty">لا توجد وسوم بعد</string>
+    <string name="tag_empty_description">أضف وسمًا لتنظيم مهامك.</string>
+    <plurals name="tag_task_count">
+        <item quantity="zero">%d مهمة</item>
+        <item quantity="one">مهمة واحدة (%d)</item>
+        <item quantity="two">%d مهمة</item>
+        <item quantity="few">%d مهمة</item>
+        <item quantity="many">%d مهمة</item>
+        <item quantity="other">%d مهمة</item>
+    </plurals>
+    <plurals name="tag_delete_message">
+        <item quantity="zero">سيُزال هذا الوسم من %d مهمة ومن الوسوم المحفوظة. ستبقى المهام محفوظة.</item>
+        <item quantity="one">سيُزال هذا الوسم من مهمة واحدة (%d) ومن الوسوم المحفوظة. ستبقى المهمة محفوظة.</item>
+        <item quantity="two">سيُزال هذا الوسم من %d مهمة ومن الوسوم المحفوظة. ستبقى المهام محفوظة.</item>
+        <item quantity="few">سيُزال هذا الوسم من %d مهمة ومن الوسوم المحفوظة. ستبقى المهام محفوظة.</item>
+        <item quantity="many">سيُزال هذا الوسم من %d مهمة ومن الوسوم المحفوظة. ستبقى المهام محفوظة.</item>
+        <item quantity="other">سيُزال هذا الوسم من %d مهمة ومن الوسوم المحفوظة. ستبقى المهام محفوظة.</item>
+    </plurals>
+</resources>

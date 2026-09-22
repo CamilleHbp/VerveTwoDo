@@ -1,0 +1,20 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="task_view_title">View Task</string>
+    <string name="task_edit">Edit</string>
+    <string name="task_details_heading">Details</string>
+    <string name="task_subtasks">Subtasks</string>
+    <string name="task_subtask_label">Subtask %1$d</string>
+    <string name="task_subtask_remove">Remove subtask %1$d</string>
+    <string name="task_subtask_check">Complete subtask %1$d</string>
+    <string name="task_subtask_add">Add subtask</string>
+    <string name="task_subtasks_add">Add subtasks</string>
+    <string name="task_subtasks_empty">Break this task into smaller steps.</string>
+    <string name="task_subtasks_progress">%1$d of %2$d complete</string>
+    <string name="task_mark_incomplete">Mark as incomplete</string>
+    <string name="task_not_found">This task is no longer available.</string>
+    <string name="task_load_failed">Couldn’t load this task. Try again.</string>
+    <string name="task_update_failed">Couldn’t save the change. Try again.</string>
+    <string name="task_select">Select</string>
+    <string name="task_select_accessibility">Select tasks</string>
+    <string name="task_selection_hint">Tap tasks to select them.</string>
+</resources>

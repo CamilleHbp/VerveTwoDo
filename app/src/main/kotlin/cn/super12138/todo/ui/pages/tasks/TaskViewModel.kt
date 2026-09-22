@@ -52,7 +52,7 @@ class TaskViewModel(
             } else {
                 it.selectedTaskIds + task.id // 不然给他加上
             }
-            it.copy(selectedTaskIds = newIds, inSelectionMode = newIds.isNotEmpty())
+            it.copy(selectedTaskIds = newIds)
         }
     }
 
@@ -79,12 +79,9 @@ class TaskViewModel(
         }
     }
 
-    fun enterMultiSelectMode(id: Int) =
+    fun enterMultiSelectMode() =
         localUiState.update {
-            it.copy(
-                selectedTaskIds = setOf(id),
-                inSelectionMode = true
-            )
+            it.copy(selectedTaskIds = emptySet(), inSelectionMode = true)
         }
 
     fun exitMultiSelectMode() =

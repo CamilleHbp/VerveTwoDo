@@ -141,11 +141,11 @@ fun SettingsData(
                 )
             }
             item {
-                SettingsCategory(stringResource(R.string.pref_category_category_management))
+                SettingsCategory(stringResource(R.string.tag_manage))
                 SettingsItem(
                     leadingIconRes = R.drawable.ic_category,
-                    title = stringResource(R.string.pref_category_category_management),
-                    description = stringResource(R.string.pref_category_management_desc),
+                    title = stringResource(R.string.tag_manage),
+                    description = stringResource(R.string.tag_manage_description),
                     onClick = toCategoryManager
                 )
             }

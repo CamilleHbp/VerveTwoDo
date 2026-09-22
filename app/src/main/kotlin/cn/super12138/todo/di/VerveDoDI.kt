@@ -65,7 +65,8 @@ object VerveDoDI {
                     TaskDatabase.MIGRATION_3_4,
                     TaskDatabase.MIGRATION_4_5,
                     TaskDatabase.MIGRATION_5_6,
-                    TaskDatabase.MIGRATION_6_7
+                    TaskDatabase.MIGRATION_6_7,
+                    TaskDatabase.MIGRATION_7_8
                 )
                 .fallbackToDestructiveMigration(false)
                 .build()
@@ -83,8 +84,9 @@ object VerveDoDI {
 
     val viewModelModule = module {
         viewModelOf(::MainViewModel)
-        viewModelOf(::OverviewViewModel)
+        viewModel { OverviewViewModel(get(), get(), get(), androidApplication()) }
         viewModelOf(::TaskViewModel)
+        viewModel { params -> cn.super12138.todo.ui.pages.detail.TaskDetailViewModel(params.get(), get(), get(), androidApplication()) }
         viewModel<EditorViewModel> { params ->
             EditorViewModel(
                 initialTask = params.getOrNull(),
@@ -96,7 +98,7 @@ object VerveDoDI {
         }
         viewModelOf(::SettingsAppearanceViewModel)
         viewModelOf(::SettingsDataViewModel)
-        viewModelOf(::SettingsDataCategoryViewModel)
+        viewModel { SettingsDataCategoryViewModel(get(), androidApplication()) }
         viewModelOf(::SettingsInterfaceInteractionViewModel)
     }
 

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tag_color_wheel">Color wheel</string>
+    <string name="tag_color_brightness">Brightness</string>
+    <string name="tag_manage">Manage tags</string>
+    <string name="tag_manage_description">Rename, recolor, or delete tags across your tasks.</string>
+    <string name="tag_edit">Edit tag</string>
+    <string name="tag_edit_named">Edit tag %1$s</string>
+    <string name="tag_create">New tag</string>
+    <string name="tag_name">Tag name</string>
+    <string name="tag_name_exists">A tag with this name already exists. Choose another name.</string>
+    <string name="tag_change_failed">Couldn’t update this tag. Try again.</string>
+    <string name="tag_edit_scope">Changes apply to every task using this tag.</string>
+    <string name="tag_delete">Delete tag</string>
+    <string name="tag_delete_title">Delete “%1$s”?</string>
+    <string name="tag_delete_unused">This tag will be removed from your saved tags. Your tasks will be kept.</string>
+    <string name="tag_no_tasks">No tasks</string>
+    <string name="tag_empty">No tags yet</string>
+    <string name="tag_empty_description">Add a tag to organize your tasks.</string>
+    <plurals name="tag_task_count">
+        <item quantity="one">%d task</item>
+        <item quantity="other">%d tasks</item>
+    </plurals>
+    <plurals name="tag_delete_message">
+        <item quantity="one">This tag will be removed from %d task and your saved tags. The task will be kept.</item>
+        <item quantity="other">This tag will be removed from %d tasks and your saved tags. The tasks will be kept.</item>
+    </plurals>
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tag_color_wheel">Farbkreis</string>
+    <string name="tag_color_brightness">Helligkeit</string>
+    <string name="tag_manage">Tags verwalten</string>
+    <string name="tag_manage_description">Tags für alle Aufgaben umbenennen, umfärben oder löschen.</string>
+    <string name="tag_edit">Tag bearbeiten</string>
+    <string name="tag_edit_named">Tag %1$s bearbeiten</string>
+    <string name="tag_create">Neuer Tag</string>
+    <string name="tag_name">Tag-Name</string>
+    <string name="tag_name_exists">Ein Tag mit diesem Namen existiert bereits. Wähle einen anderen Namen.</string>
+    <string name="tag_change_failed">Der Tag konnte nicht aktualisiert werden. Versuche es erneut.</string>
+    <string name="tag_edit_scope">Änderungen gelten für alle Aufgaben mit diesem Tag.</string>
+    <string name="tag_delete">Tag löschen</string>
+    <string name="tag_delete_title">„%1$s“ löschen?</string>
+    <string name="tag_delete_unused">Dieser Tag wird aus deinen gespeicherten Tags entfernt. Deine Aufgaben bleiben erhalten.</string>
+    <string name="tag_no_tasks">Keine Aufgaben</string>
+    <string name="tag_empty">Noch keine Tags</string>
+    <string name="tag_empty_description">Füge einen Tag hinzu, um deine Aufgaben zu organisieren.</string>
+    <plurals name="tag_task_count">
+        <item quantity="one">%d Aufgabe</item>
+        <item quantity="other">%d Aufgaben</item>
+    </plurals>
+    <plurals name="tag_delete_message">
+        <item quantity="one">Dieser Tag wird von %d Aufgabe und aus deinen gespeicherten Tags entfernt. Die Aufgabe bleibt erhalten.</item>
+        <item quantity="other">Dieser Tag wird von %d Aufgaben und aus deinen gespeicherten Tags entfernt. Die Aufgaben bleiben erhalten.</item>
+    </plurals>
+</resources>

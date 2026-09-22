@@ -7,6 +7,7 @@ data class TaskEditorUiState(
     val category: String = "",
     val tags: List<String> = emptyList(),
     val details: String = "",
+    val subtasks: List<cn.super12138.todo.logic.database.Subtask> = emptyList(),
     val tagColors: Map<String, Int> = emptyMap(),
     val defaultDueTimeMinutes: Int = cn.super12138.todo.logic.DEFAULT_DUE_TIME_MINUTES,
     val dueTimeMinutes: Int? = null,

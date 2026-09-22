@@ -28,6 +28,39 @@ interface TaskDao {
     @Query("SELECT * FROM ${Constants.DB_TABLE_NAME}")
     fun getAll(): Flow<List<TaskEntity>>
 
+    @Query("SELECT * FROM ${Constants.DB_TABLE_NAME} WHERE id = :taskId")
+    fun observeTask(taskId: Int): Flow<TaskEntity?>
+
+    @Query("SELECT * FROM ${Constants.DB_TABLE_NAME} WHERE id = :taskId")
+    suspend fun getTask(taskId: Int): TaskEntity?
+
+    @Query("SELECT * FROM ${Constants.DB_TABLE_NAME}")
+    suspend fun getTasksForTagUpdate(): List<TaskEntity>
+
+    @Query("UPDATE ${Constants.DB_TABLE_NAME} SET tags = :tags, category = :category WHERE id = :taskId")
+    suspend fun updateTags(taskId: Int, tags: List<String>, category: String)
+
+    @Transaction
+    suspend fun replaceTag(old: String, replacement: String?) {
+        getTasksForTagUpdate().forEach { task ->
+            if (old in task.taskTags) {
+                val tags = cn.super12138.todo.logic.replaceTag(task.taskTags, old, replacement)
+                updateTags(task.id, tags, tags.firstOrNull().orEmpty())
+            }
+        }
+    }
+
+    @Query("UPDATE ${Constants.DB_TABLE_NAME} SET subtasks = :subtasks WHERE id = :taskId")
+    suspend fun updateSubtasks(taskId: Int, subtasks: List<Subtask>)
+
+    @Transaction
+    suspend fun setSubtaskCompleted(taskId: Int, subtaskId: String, completed: Boolean) {
+        val task = getTask(taskId) ?: return
+        updateSubtasks(taskId, task.subtasks.map {
+            if (it.id == subtaskId) it.copy(isCompleted = completed) else it
+        })
+    }
+
     @Query("SELECT DISTINCT category FROM ${Constants.DB_TABLE_NAME} WHERE TRIM(category) != ''")
     fun getCategories(): Flow<List<String>>
 

@@ -22,11 +22,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.IconButton
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -63,6 +67,7 @@ import cn.super12138.todo.logic.model.Priority
 import cn.super12138.todo.ui.VerveDoDefaults
 import cn.super12138.todo.ui.components.CheckboxWithLabel
 import cn.super12138.todo.ui.components.ConfirmDialog
+import cn.super12138.todo.ui.components.PriorityIcon
 import cn.super12138.todo.ui.components.TagTextField
 import cn.super12138.todo.ui.components.TagChip
 import cn.super12138.todo.ui.components.DueTimeDialog
@@ -265,6 +270,41 @@ fun TaskEditorPage(
                 )
             }
             item {
+                Subtitle(R.string.task_subtasks)
+                if (uiState.subtasks.isEmpty()) Text(stringResource(R.string.task_subtasks_empty),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            itemsIndexed(uiState.subtasks, key = { _, item -> item.id }) { index, item ->
+                val subtaskFocus = remember { FocusRequester() }
+                LaunchedEffect(item.id) { if (item.content.isEmpty()) subtaskFocus.requestFocus() }
+                OutlinedTextField(
+                    value = item.content,
+                    onValueChange = { viewModel.updateSubtask(item.id, it) },
+                    label = { Text(stringResource(R.string.task_subtask_label, index + 1)) },
+                    leadingIcon = {
+                        val checkLabel = stringResource(R.string.task_subtask_check, index + 1)
+                        Checkbox(checked = item.isCompleted,
+                            onCheckedChange = { viewModel.setSubtaskCompleted(item.id, it) },
+                            enabled = !uiState.isSaving,
+                            modifier = Modifier.semantics { contentDescription = checkLabel })
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = { viewModel.removeSubtask(item.id) }, enabled = !uiState.isSaving) {
+                            Icon(painterResource(R.drawable.ic_close), stringResource(R.string.task_subtask_remove, index + 1))
+                        }
+                    },
+                    enabled = !uiState.isSaving,
+                    modifier = Modifier.fillMaxWidth().focusRequester(subtaskFocus)
+                )
+            }
+            item {
+                TextButton(onClick = viewModel::addSubtask, enabled = !uiState.isSaving) {
+                    Icon(painterResource(R.drawable.ic_add), null)
+                    Text(stringResource(R.string.task_subtask_add), Modifier.padding(start = 8.dp))
+                }
+            }
+            item {
                 val colors = assignTagColors(uiState.tags, uiState.tagColors)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     uiState.tags.forEach { tag ->
@@ -297,7 +337,11 @@ fun TaskEditorPage(
                 ) {
                     priorityList.forEachIndexed { index, priority ->
                         ToggleButton(
-                            content = { Text(stringResource(priority.nameRes)) },
+                            content = {
+                                PriorityIcon(priority, tint = LocalContentColor.current, contentDescription = null)
+                                Spacer(Modifier.size(8.dp))
+                                Text(stringResource(priority.nameRes))
+                            },
                             checked = uiState.priority == priority,
                             onCheckedChange = {
                                 viewModel.setPriority(priority)

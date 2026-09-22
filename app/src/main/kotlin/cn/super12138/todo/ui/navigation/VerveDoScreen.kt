@@ -13,6 +13,9 @@ sealed class VerveDoScreen : NavKey {
     data object Tasks : VerveDoScreen()
 
     @Serializable
+    data class TaskDetail(val taskId: Int) : VerveDoScreen()
+
+    @Serializable
     sealed class Settings : VerveDoScreen() {
         @Serializable
         data object Main : Settings()

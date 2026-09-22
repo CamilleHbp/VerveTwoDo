@@ -23,6 +23,9 @@ class SettingsRepository(private val dataStoreManager: DataStoreManager) {
     val defaultDueTimeFlow = dataStoreManager.defaultDueTimeFlow
     suspend fun ensureTagColors(tags: List<String>) = dataStoreManager.ensureTagColors(tags)
     suspend fun setTagColor(tag: String, color: Int) = dataStoreManager.setTagColor(tag, color)
+
+    suspend fun updateTag(old: String?, replacement: String?, color: Int?) =
+        dataStoreManager.updateTag(old, replacement, color)
     suspend fun setDefaultDueTime(minutes: Int) = dataStoreManager.setDefaultDueTime(minutes)
 
     suspend fun setDynamicColor(value: Boolean) = dataStoreManager.setDynamicColor(value)

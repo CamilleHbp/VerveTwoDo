@@ -130,10 +130,12 @@ class TaskMetadataUiTest {
             ready
         }
         capture("widget")
+        instrumentation.runOnMainSync { assertFalse(host.texts().any { it.contains("Widget-hidden subtask") }) }
     }
 
     private fun seed(title: String, days: Long): TaskEntity = runBlocking {
         val task = TaskEntity(content = title, category = "Work", tags = listOf("Work", "Home"),
+            subtasks = listOf(cn.super12138.todo.logic.database.Subtask("Widget-hidden subtask")),
             details = "Bring the floor plan and confirm the measurements before the meeting.", priority = 0f,
             dueDateMillis = LocalDate.now().plusDays(days).atTime(14, 30).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
             dueTimeMinutes = 870)
