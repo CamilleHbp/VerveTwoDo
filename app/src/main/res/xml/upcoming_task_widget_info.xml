@@ -3,9 +3,9 @@
     android:configure="cn.super12138.todo.ui.widget.upcoming.UpcomingWidgetConfigurationActivity"
     android:initialLayout="@layout/glance_default_loading_layout"
     android:minWidth="250dp"
-    android:minHeight="180dp"
+    android:minHeight="100dp"
     android:minResizeWidth="180dp"
-    android:minResizeHeight="180dp"
+    android:minResizeHeight="100dp"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="1800000"
     android:widgetCategory="home_screen" />
