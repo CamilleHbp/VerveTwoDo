@@ -46,11 +46,24 @@ Future changes may add task synchronization through a private sync service alrea
 
 The service contract, authentication, synchronized fields, conflict handling, deletion behavior, and offline behavior during synchronization remain open decisions.
 
-### Open product decisions
+### Overview behavior
 
-- Overview's default emphasis: today's and overdue work, the coming days, or a balance of tasks and summaries.
-- Whether card personalization includes user-adjustable sizes in addition to visibility, ordering, and locking.
-- The exact behavior of layout locks and the available ways to restore hidden cards or reset the arrangement.
+- The default order is Overdue, Today, Next 7 days, then All, Pending, and Completed summaries. Overdue appears when unfinished tasks have a due date before today; Next 7 days covers tomorrow through seven days ahead.
+- Task rows open View Task, which displays the full title, metadata, details, and a checklist. Long press or the detail screen’s Edit action opens the editor. Overview rows provide a separate completion control with Undo. Status cards and section links open a named task collection that can return to Overview or show all tasks.
+- Subtasks are ordered checklist items with text and completion state. They belong to their parent task, never appear as independent tasks or in launcher widgets, and do not automatically complete their parent. They can be checked in View Task, and added, renamed, removed, or checked in the editor.
+- A visible Select action in the Tasks toolbar enters multi-selection, including while searching. Rows show selection checkboxes, completion controls are hidden, and the toolbar offers Select all, Delete, and Close. Selection remains active until explicitly closed, including when no rows are selected.
+- Edit overview supports showing or hiding each card, dragging or using move buttons, Compact and Expanded sizes, and individual layout locks. Changes take effect when saved; unsaved changes can be discarded.
+- Compact task sections preview three tasks; expanded sections preview six. Phone task sections retain full readable width. Compact sections can share a row on wider screens, while expanded cards use the available width.
+- A lock protects a card's position, size, and visibility without disabling task actions. Other cards can move around its fixed position. Hidden cards remain available in the editor, and Reset layout restores the default arrangement and clears locks without changing tasks.
+
+### Tag behavior
+
+- Tags have a shared name and color across tasks. Manage tags is available from the Tasks toolbar and Settings → Data Management, and includes saved tags and tags already used by tasks, including imported categories. Each tag shows its task count, including completed tasks.
+- Tap or long press a tag in Tasks, Overview, View Task, or the task editor to edit its shared name and color. The task editor's separate remove control only removes that tag from the current task.
+- Create and rename accept nonblank names, trim surrounding whitespace, and prevent duplicate names without regard to letter case. Changing only a tag's color preserves its existing name.
+- Choose a color with a hue-and-saturation wheel and brightness control, or enter a six-digit hexadecimal color. A swatch previews the selected color; invalid color values prevent saving.
+- Renaming or deleting a tag updates its use across pending and completed tasks, saved tags, open task drafts, and launcher-widget tag filters. Color changes apply wherever the shared tag is displayed.
+- Deleting a tag requires a separate confirmation that makes clear that tasks are kept and, for a tag in use, states the affected task count. Deletion removes the tag's assignments and saved identity.
 
 ## Identity and Attribution
 

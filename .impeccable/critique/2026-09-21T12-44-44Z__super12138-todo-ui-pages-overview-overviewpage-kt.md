@@ -10,6 +10,7 @@ target_fingerprint: "sha256:884e64ca2c8493b5f4529f0b6a640191f71ac9a9cb5ae4543434
 target_path: /Users/camille/Dev/Personal/VerveTwoDo/app/src/main/kotlin/cn/super12138/todo/ui/pages/overview/OverviewPage.kt
 timestamp: 2026-09-21T12-44-44Z
 slug: super12138-todo-ui-pages-overview-overviewpage-kt
+closed: true
 ---
 **Overview needs to become a place where users can act on their tasks.** Its Material styling is coherent, but the hierarchy gives large summaries priority over the actual work.
 
