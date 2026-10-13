@@ -37,11 +37,12 @@ android {
     }
 
     defaultConfig {
+        resValue("string", "camille_update_app_id", "vervetwodo")
         applicationId = "studio.camille.vervetwodo"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1271
-        versionName = "3.5.0"
+        versionCode = 1273
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -95,6 +96,7 @@ kotlin {
 }
 
 dependencies {
+    implementation(files("libs/camille-updater-1.0.0.aar"))
 
     // Android X
     implementation(libs.androidx.core.ktx)
