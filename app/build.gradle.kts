@@ -73,6 +73,7 @@ android {
     }
 
     buildFeatures {
+        resValues = true
         compose = true
     }
 
