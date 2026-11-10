@@ -90,15 +90,31 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
 select {
   min-height: var(--input-height);
 }
+select {
+  appearance: none;
+  padding-right: 32px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 16px center, right 11px center;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+@media (forced-colors: active) {
+  select {
+    appearance: auto;
+    background-image: none;
+  }
+}
 input[type="checkbox"]:where(:not(.schedule-toggle input)) {
   appearance: none;
   display: inline-grid;
   place-items: center;
-  width: var(--input-height);
-  height: var(--input-height);
+  width: 18px;
+  height: 18px;
   padding: 0;
-  border: 1px solid var(--line);
-  border-radius: 7px;
+  border: 1px solid var(--muted);
+  border-radius: 4px;
   background: var(--surface);
   cursor: pointer;
 }
@@ -108,11 +124,12 @@ input[type="checkbox"]:where(:not(.schedule-toggle input)):checked {
 }
 input[type="checkbox"]:where(:not(.schedule-toggle input)):checked::after {
   content: "";
-  width: 7px;
-  height: 14px;
+  box-sizing: border-box;
+  width: 6px;
+  height: 10px;
   border: solid white;
-  border-width: 0 3px 3px 0;
-  transform: translateY(-2px) rotate(45deg);
+  border-width: 0 2px 2px 0;
+  transform: translateY(-1px) rotate(45deg);
 }
 input[type="checkbox"]:disabled {
   opacity: 0.45;
@@ -328,7 +345,10 @@ kbd {
   background: var(--sidebar) !important;
   border-color: transparent !important;
 }
-.toolbar select,
+.toolbar select {
+  border-color: transparent;
+  background-color: var(--sidebar);
+}
 .toolbar button {
   font-size: 13px;
 }
@@ -995,6 +1015,9 @@ kbd {
   .toolbar button {
     font-size: 12px;
     padding: 9px 7px;
+  }
+  .toolbar select {
+    padding-right: 32px;
   }
   .search {
     min-width: 80px;
