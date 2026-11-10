@@ -1,0 +1,7 @@
+node_modules/
+dist/
+playwright-report/
+test-results/
+server/data/
+server/vervetwodo-web
+__pycache__/

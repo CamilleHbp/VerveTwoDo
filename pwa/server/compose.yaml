@@ -1,0 +1,20 @@
+services:
+  vervetwodo-web:
+    build: .
+    image: vervetwodo-web:${RELEASE_ID}
+    restart: unless-stopped
+    read_only: true
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    tmpfs: [/tmp]
+    environment:
+      PUBLIC_ORIGIN: https://todo.camille.studio
+      LEGACY_ORIGIN: https://vervetwodo-web.195-15-214-30.sslip.io
+      SYNC_ORIGIN: https://vervetwodo.195-15-214-30.sslip.io
+    volumes:
+      - /srv/homeserver/data/vervetwodo-web:/data
+    networks: [web]
+networks:
+  web:
+    external: true
+    name: homeserver-web
