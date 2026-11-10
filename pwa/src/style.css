@@ -726,6 +726,9 @@ kbd {
   line-height: 1.7;
   font-size: 15px;
 }
+.markdown li:has(> input[type="checkbox"]:first-child, > p:first-child > input[type="checkbox"]:first-child) {
+  list-style-type: none;
+}
 .markdown h1 {
   font-size: 25px;
 }

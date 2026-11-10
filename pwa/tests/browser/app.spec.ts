@@ -292,3 +292,26 @@ test("Escape dismisses one dialog at a time in fullscreen", async ({ page }) => 
   await expect(task).toHaveCount(0);
   expect(await page.evaluate(() => !!document.fullscreenElement)).toBe(true);
 });
+
+test("Markdown task items use checkboxes as their only marker", async ({ page }) => {
+  await page.goto("/");
+  await page.locator(".new-task").click();
+  await page.getByLabel("Title", { exact: true }).fill("Packing");
+  await page.getByRole("button", { name: "Add notes" }).click();
+  const notes = page.getByLabel("Notes", { exact: true });
+  await notes.fill("- [ ] Pack\n\n- [x] Book\n\n- Ordinary bullet\n  - [ ] Nested task");
+  await notes.press("Escape");
+  for (const selector of [".notes-preview .markdown", ".inline-markdown"]) {
+    const items = page.locator(selector).locator("li");
+    await expect(items).toHaveCount(4);
+    for (const index of [0, 1, 3]) {
+      await expect(items.nth(index)).toHaveCSS("list-style-type", "none");
+      await expect(items.nth(index).getByRole("checkbox")).toBeVisible();
+    }
+    await expect(items.nth(1).getByRole("checkbox")).toBeChecked();
+    await expect(items.nth(2)).toHaveCSS("list-style-type", "disc");
+    if (selector.startsWith(".notes-preview")) {
+      await page.getByRole("button", { name: "Save", exact: true }).click();
+    }
+  }
+});
