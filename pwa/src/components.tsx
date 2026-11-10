@@ -52,8 +52,8 @@ export function Modal({
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const d = ref.current!;
-    d.showModal();
     const previous = document.activeElement;
+    d.showModal();
     return () => {
       d.close();
       if (previous instanceof HTMLElement) previous.focus();
@@ -63,6 +63,13 @@ export function Modal({
     <dialog
       ref={ref}
       className={wide ? "modal wide" : "modal"}
+      onKeyDown={(e) => {
+        if (e.key !== "Escape" || e.nativeEvent.isComposing) return;
+        e.stopPropagation();
+        if (e.defaultPrevented) return;
+        e.preventDefault();
+        if (!e.repeat) onClose();
+      }}
       onCancel={(e) => {
         e.preventDefault();
         onClose();
@@ -500,6 +507,60 @@ function PriorityScale({
   );
 }
 
+function formattedNotes(value: string) {
+  return { __html: DOMPurify.sanitize(marked.parse(value, { async: false })) };
+}
+
+function NotesField({ value, onChange, startEditing, t }: {
+  value: string;
+  onChange: (value: string) => void;
+  startEditing: boolean;
+  t: Text;
+}) {
+  const [editing, setEditing] = useState(startEditing);
+  const id = useId();
+  const preview = useRef<HTMLDivElement>(null);
+  const restoreFocus = useRef(false);
+  React.useLayoutEffect(() => {
+    if (!editing && restoreFocus.current) {
+      restoreFocus.current = false;
+      preview.current?.focus();
+    }
+  }, [editing]);
+  return (
+    <div className="field notes-field">
+      <label htmlFor={editing ? id : undefined} onClick={() => setEditing(true)}>{t("notes")}</label>
+      {editing ? (
+        <textarea id={id} autoFocus maxLength={100000} value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onBlur={() => setEditing(false)}
+          onKeyDown={(e) => {
+            if (e.key !== "Escape" || e.nativeEvent.isComposing) return;
+            e.preventDefault();
+            e.stopPropagation();
+            restoreFocus.current = true;
+            setEditing(false);
+          }}
+        />
+      ) : (
+        <div ref={preview} role="button" tabIndex={0} className="notes-preview"
+          aria-label={value ? t("edit") + " · " + t("notes") : t("addNotes")}
+          onClick={(e) => {
+            if (!(e.target as Element).closest("a") && !window.getSelection()?.toString()) setEditing(true);
+          }}
+          onKeyDown={(e) => {
+            if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) {
+              e.preventDefault();
+              setEditing(true);
+            }
+          }}>
+          {value ? <div className="markdown" dangerouslySetInnerHTML={formattedNotes(value)} /> : t("addNotes")}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ChecklistIcon({ action }: { action: "up" | "down" | "remove" }) {
   const path = {
     up: "m5 14 7-7 7 7",
@@ -826,17 +887,8 @@ export function TaskModal({
             {showing("notes") ? (
               editor(
                 "notes",
-                <>
-                  <Field label={t("notes")}>
-                    <textarea
-                      rows={9}
-                      maxLength={100000}
-                      value={draft.details}
-                      onChange={(e) => patch({ details: e.target.value })}
-                    />
-                  </Field>
-                  <p className="hint">{t("markdownHint")}</p>
-                </>,
+                <NotesField value={draft.details} startEditing={!creating} t={t}
+                  onChange={(details) => patch({ details })} />,
               )
             ) : (
               <>
@@ -855,13 +907,7 @@ export function TaskModal({
                       )
                         void change("notes");
                     }}
-                    dangerouslySetInnerHTML={{
-                      __html: DOMPurify.sanitize(
-                        marked.parse(current.details, {
-                          async: false,
-                        }) as string,
-                      ),
-                    }}
+                    dangerouslySetInnerHTML={formattedNotes(current.details)}
                   />
                 ) : (
                   opener("notes", t("addNotes"), t("addNotes"))

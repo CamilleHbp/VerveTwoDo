@@ -67,7 +67,6 @@
   "editTask": "Modifier la tâche",
   "title": "Titre",
   "notes": "Notes",
-  "markdownHint": "Markdown pris en charge : **gras**, *italique*, # titres et listes. La mise en forme apparaît lors de la consultation de la tâche.",
   "checklist": "Liste de contrôle",
   "step": "Étape",
   "newStepDone": "Marquer la nouvelle étape comme terminée",

@@ -53,10 +53,7 @@ button:disabled {
   cursor: default;
 }
 button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
+a:focus-visible {
   outline: 3px solid #619ac6;
   outline-offset: 3px;
 }
@@ -80,6 +77,31 @@ textarea {
   padding: 10px 12px;
   background: var(--surface);
   min-width: 0;
+}
+.notes-preview {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 10px 12px;
+  background: var(--surface);
+  cursor: text;
+}
+.notes-preview:not(:has(.markdown)) { color: var(--muted); }
+.notes-preview .markdown > :last-child { margin-bottom: 0; }
+.notes-field textarea, .notes-preview {
+  height: 7rem;
+  overflow: auto;
+  resize: none;
+  font-size: 15px;
+  line-height: 1.6;
+}
+input:focus-visible, textarea:focus-visible, select:focus-visible,
+.notes-preview:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+input[type="checkbox"]:checked:focus-visible {
+  outline-color: var(--surface);
+  outline-offset: -4px;
 }
 input[type="checkbox"] {
   margin: 0;
@@ -1245,6 +1267,16 @@ pre.command {
 .task-column .toggle { min-height: 44px; margin: 8px 0; cursor: pointer; }
 .task-column input[type="checkbox"] { margin: 0; }
 .step-check { flex: 0 0 44px; justify-content: center; }
+.step-check input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+}
+.step-check input[type="checkbox"]:checked::after {
+  width: 5px;
+  height: 10px;
+  border-width: 0 2px 2px 0;
+}
 .step-actions { display: flex; align-items: center; gap: 4px; }
 .task-column .step { gap: 8px; }
 .step-actions button, .wide .icon-button {
@@ -1354,7 +1386,7 @@ pre.command {
 .step-field:has(input:not([type="checkbox"]):focus) {
   background: var(--surface);
   border-color: var(--primary);
-  outline: 1px solid var(--primary);
+  outline: 2px solid var(--primary);
   outline-offset: -2px;
 }
 .step-field input:not([type="checkbox"]) {

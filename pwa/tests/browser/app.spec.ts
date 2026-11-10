@@ -26,11 +26,19 @@ test("create, markdown, checklist, metadata, recurrence, undo and offline reload
   await page.goto("/");
   await page.locator(".new-task").click();
   await page.getByLabel("Title", { exact: true }).fill("Plan the weekend");
+  await page.getByRole("button", { name: "Add notes" }).click();
   await page
     .getByLabel("Notes", { exact: true })
     .fill("**Trail map**\n<script>alert(1)</script>");
+  await page.getByLabel("Notes", { exact: true }).press("Escape");
+  await expect(page.locator(".notes-preview strong")).toHaveText("Trail map");
+  await expect(page.getByRole("button", {name: "Edit · Notes"})).toBeFocused();
+  await page.locator(".notes-field").screenshot({path:"test-results/notes-preview-desktop.png"});
+  await page.locator(".notes-preview strong").click();
+  await page.locator(".notes-field").screenshot({path:"test-results/notes-edit-desktop.png"});
   const entry = page.getByRole("textbox", {name:"Add a step"});
   await entry.fill("Pack water");
+  await expect(page.locator(".notes-preview strong")).toHaveText("Trail map");
   await entry.press("Enter");
   await expect(entry).toBeFocused();
   await expect(entry).toHaveValue("");
@@ -261,4 +269,26 @@ test("edit individual fields on a phone and keep their values after reopening", 
   await expect(dialog.getByRole("button", {name:"Edit · Due date"})).toContainText("Jan 9, 2027");
   await expect(dialog.locator(".markdown strong")).toHaveText("map");
   await page.screenshot({path: "test-results/task-inline-mobile.png"});
+});
+
+test("Escape dismisses one dialog at a time in fullscreen", async ({ page }) => {
+  await page.goto("/");
+  await page.locator(".new-task").evaluate(button => {
+    button.addEventListener("click", () => document.documentElement.requestFullscreen(), { once: true });
+  });
+  await page.locator(".new-task").click();
+  const task = page.getByRole("dialog", { name: "New task", exact: true });
+  await task.getByLabel("Title", { exact: true }).fill("Keep the draft");
+  await page.keyboard.press("Escape");
+  const discard = page.getByRole("dialog", { name: "Discard this draft?" });
+  await expect(discard).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(discard).toHaveCount(0);
+  await expect(task).toBeVisible();
+  await expect(task.getByLabel("Title", { exact: true })).toHaveValue("Keep the draft");
+  expect(await page.evaluate(() => !!document.fullscreenElement)).toBe(true);
+  await task.getByLabel("Title", { exact: true }).fill("");
+  await page.keyboard.press("Escape");
+  await expect(task).toHaveCount(0);
+  expect(await page.evaluate(() => !!document.fullscreenElement)).toBe(true);
 });

@@ -67,7 +67,6 @@
   "editTask": "Edit task",
   "title": "Title",
   "notes": "Notes",
-  "markdownHint": "Markdown supported: **bold**, *italic*, # headings, and lists. Formatting appears when viewing the task.",
   "checklist": "Checklist",
   "step": "Step",
   "newStepDone": "Mark the new step complete",
