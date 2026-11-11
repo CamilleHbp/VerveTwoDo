@@ -2,5 +2,5 @@
 package studio.camille.vervetwodo.integration
 
 object SharedIconCatalogue {
-    val ids = listOf("tag", "cinema", "personal", "work", "house", "chores", "building", "computer", "web", "travel", "health", "learning", "finance", "music", "shopping", "cooking", "groceries", "gardening", "pets", "sport", "cycling", "car", "repairs", "laundry", "mail", "phone", "photography", "art", "gaming", "gifts", "family", "coffee", "paperwork", "tree", "rock", "sewing", "collectives", "nonfood", "apero", "canned", "dry", "vegetables", "fruit", "household", "dessert", "bottles", "spices", "protein", "sauces", "alternatives", "wrappers", "breakfast", "other", "book", "tools", "calendar", "folder")
+    val ids = listOf("tag", "cinema", "personal", "work", "house", "chores", "building", "computer", "web", "travel", "health", "learning", "finance", "music", "shopping", "cooking", "groceries", "gardening", "pets", "sport", "cycling", "car", "repairs", "laundry", "mail", "phone", "photography", "art", "gaming", "gifts", "family", "coffee", "paperwork", "tree", "rock", "sewing", "collectives", "nonfood", "apero", "canned", "dry", "vegetables", "fruit", "household", "dessert", "bottles", "spices", "protein", "sauces", "alternatives", "wrappers", "breakfast", "other", "book", "tools", "calendar", "folder", "keys", "clock", "lightbulb", "train", "headphones", "backpack")
 }

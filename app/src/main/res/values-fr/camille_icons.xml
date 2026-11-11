@@ -58,4 +58,10 @@
     <string name="camille_icon_tools">Outils de travail</string>
     <string name="camille_icon_calendar">Calendrier</string>
     <string name="camille_icon_folder">Dossier</string>
+    <string name="camille_icon_keys">Clés</string>
+    <string name="camille_icon_clock">Horloge</string>
+    <string name="camille_icon_lightbulb">Ampoule</string>
+    <string name="camille_icon_train">Train</string>
+    <string name="camille_icon_headphones">Casque audio</string>
+    <string name="camille_icon_backpack">Sac à dos</string>
 </resources>

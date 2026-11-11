@@ -41,8 +41,8 @@ android {
         applicationId = "studio.camille.vervetwodo"
         minSdk = 26
         targetSdk = 37
-        versionCode = 128806
-        versionName = "1.0.26"
+        versionCode = 128807
+        versionName = "1.0.27"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

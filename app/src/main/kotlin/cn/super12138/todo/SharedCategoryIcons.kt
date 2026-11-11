@@ -2,7 +2,7 @@
 package cn.super12138.todo
 
 object SharedCategoryIcons {
-    val ids = listOf("tag", "cinema", "personal", "work", "house", "chores", "building", "computer", "web", "travel", "health", "learning", "finance", "music", "shopping", "cooking", "groceries", "gardening", "pets", "sport", "cycling", "car", "repairs", "laundry", "mail", "phone", "photography", "art", "gaming", "gifts", "family", "coffee", "paperwork", "tree", "rock", "sewing", "collectives", "nonfood", "apero", "canned", "dry", "vegetables", "fruit", "household", "dessert", "bottles", "spices", "protein", "sauces", "alternatives", "wrappers", "breakfast", "other", "book", "tools", "calendar", "folder")
+    val ids = listOf("tag", "cinema", "personal", "work", "house", "chores", "building", "computer", "web", "travel", "health", "learning", "finance", "music", "shopping", "cooking", "groceries", "gardening", "pets", "sport", "cycling", "car", "repairs", "laundry", "mail", "phone", "photography", "art", "gaming", "gifts", "family", "coffee", "paperwork", "tree", "rock", "sewing", "collectives", "nonfood", "apero", "canned", "dry", "vegetables", "fruit", "household", "dessert", "bottles", "spices", "protein", "sauces", "alternatives", "wrappers", "breakfast", "other", "book", "tools", "calendar", "folder", "keys", "clock", "lightbulb", "train", "headphones", "backpack")
     fun drawable(id: String): Int = when (id) {
         "tag" -> R.drawable.camille_icon_tag
         "cinema" -> R.drawable.camille_icon_cinema
@@ -61,6 +61,12 @@ object SharedCategoryIcons {
         "tools" -> R.drawable.camille_icon_tools
         "calendar" -> R.drawable.camille_icon_calendar
         "folder" -> R.drawable.camille_icon_folder
+        "keys" -> R.drawable.camille_icon_keys
+        "clock" -> R.drawable.camille_icon_clock
+        "lightbulb" -> R.drawable.camille_icon_lightbulb
+        "train" -> R.drawable.camille_icon_train
+        "headphones" -> R.drawable.camille_icon_headphones
+        "backpack" -> R.drawable.camille_icon_backpack
         else -> R.drawable.camille_icon_other
     }
     fun label(id: String): Int = when (id) {
@@ -121,6 +127,12 @@ object SharedCategoryIcons {
         "tools" -> R.string.camille_icon_tools
         "calendar" -> R.string.camille_icon_calendar
         "folder" -> R.string.camille_icon_folder
+        "keys" -> R.string.camille_icon_keys
+        "clock" -> R.string.camille_icon_clock
+        "lightbulb" -> R.string.camille_icon_lightbulb
+        "train" -> R.string.camille_icon_train
+        "headphones" -> R.string.camille_icon_headphones
+        "backpack" -> R.string.camille_icon_backpack
         else -> R.string.camille_icon_other
     }
 }

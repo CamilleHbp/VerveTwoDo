@@ -58,4 +58,10 @@
     <string name="camille_icon_tools">Work tools</string>
     <string name="camille_icon_calendar">Calendar</string>
     <string name="camille_icon_folder">Folder</string>
+    <string name="camille_icon_keys">Keys</string>
+    <string name="camille_icon_clock">Clock</string>
+    <string name="camille_icon_lightbulb">Light bulb</string>
+    <string name="camille_icon_train">Train</string>
+    <string name="camille_icon_headphones">Headphones</string>
+    <string name="camille_icon_backpack">Backpack</string>
 </resources>

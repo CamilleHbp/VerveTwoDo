@@ -56,7 +56,13 @@ export const iconIds: string[] = [
   "book",
   "tools",
   "calendar",
-  "folder"
+  "folder",
+  "keys",
+  "clock",
+  "lightbulb",
+  "train",
+  "headphones",
+  "backpack"
 ];
 export const iconLabels: Record<"en" | "fr", Record<string, string>> = {
   "en": {
@@ -116,7 +122,13 @@ export const iconLabels: Record<"en" | "fr", Record<string, string>> = {
     "book": "Book",
     "tools": "Work tools",
     "calendar": "Calendar",
-    "folder": "Folder"
+    "folder": "Folder",
+    "keys": "Keys",
+    "clock": "Clock",
+    "lightbulb": "Light bulb",
+    "train": "Train",
+    "headphones": "Headphones",
+    "backpack": "Backpack"
   },
   "fr": {
     "tag": "Étiquette par défaut",
@@ -175,6 +187,12 @@ export const iconLabels: Record<"en" | "fr", Record<string, string>> = {
     "book": "Livre",
     "tools": "Outils de travail",
     "calendar": "Calendrier",
-    "folder": "Dossier"
+    "folder": "Dossier",
+    "keys": "Clés",
+    "clock": "Horloge",
+    "lightbulb": "Ampoule",
+    "train": "Train",
+    "headphones": "Casque audio",
+    "backpack": "Sac à dos"
   }
 };
