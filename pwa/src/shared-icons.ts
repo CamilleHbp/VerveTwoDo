@@ -52,7 +52,11 @@ export const iconIds: string[] = [
   "alternatives",
   "wrappers",
   "breakfast",
-  "other"
+  "other",
+  "book",
+  "tools",
+  "calendar",
+  "folder"
 ];
 export const iconLabels: Record<"en" | "fr", Record<string, string>> = {
   "en": {
@@ -108,7 +112,11 @@ export const iconLabels: Record<"en" | "fr", Record<string, string>> = {
     "alternatives": "Plant-based alternatives",
     "wrappers": "Dough and wrappers",
     "breakfast": "Breakfast",
-    "other": "Other"
+    "other": "Other",
+    "book": "Book",
+    "tools": "Work tools",
+    "calendar": "Calendar",
+    "folder": "Folder"
   },
   "fr": {
     "tag": "Étiquette par défaut",
@@ -163,6 +171,10 @@ export const iconLabels: Record<"en" | "fr", Record<string, string>> = {
     "alternatives": "Alternatives végétales",
     "wrappers": "Pâtes et feuilles",
     "breakfast": "Petit déjeuner",
-    "other": "Autre"
+    "other": "Autre",
+    "book": "Livre",
+    "tools": "Outils de travail",
+    "calendar": "Calendrier",
+    "folder": "Dossier"
   }
 };
